@@ -3,9 +3,12 @@ import React from "react";
 import { Box, Button, Card, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import TrackList from "@/components/TrackList";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { useActions } from "@/hooks/useActions";
 
 const Index = () => {
   const router = useRouter();
+
   const tracks: ITrack[] = [
     { _id: 1, name: "track1", artist: "Dre" },
     {
@@ -15,12 +18,13 @@ const Index = () => {
       comments: ["rewrelkf", "fjkrhgkfghk"],
     },
     {
-      _id: 3,
       name: "track3",
       artist: "Coolio",
-      comments: ["rewrelkfrytyyyyyyy", "fjkrhgkfghrtretryrk"],
-      text:"lorem ipsum dolor sit amet, consectetur"
-    },
+      comments: [{ username: "www", text: "ewftrrrrrrrr" }],
+      text: "lorem ipsum dolor sit amet, consectetur",
+      audio:
+        "http://localhost:5000/audio/e831bbb5-5b01-4aa7-8bec-95d3554a9c97.mp3",
+    }
   ];
   return (
     <>
