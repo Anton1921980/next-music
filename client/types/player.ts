@@ -1,4 +1,4 @@
-import { ITrack } from "./tracks";
+import { ITrack } from "./track";
 
 export interface PlayerState{
     active: null | ITrack;

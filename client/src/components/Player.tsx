@@ -54,7 +54,7 @@ const Player = () => {
 
   const setAudio = () => {
     if (active) {
-      audio.src = active.audio;
+      audio.src = 'http://localhost:5000/' + active.audio;
       audio.volume = volume / 100; //must be from 0-1
       const minSec = (s) => {
         return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
