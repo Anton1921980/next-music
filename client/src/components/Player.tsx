@@ -10,14 +10,7 @@ import { setVolume } from "@/store/actions-creators/player";
 let audio; //in browser
 
 const Player = () => {
-  // const track: ITrack = {
-  //   name: "track3",
-  //   artist: "Coolio",
-  //   comments: [{ username: "www", text: "ewftrrrrrrrr" }],
-  //   text: "lorem ipsum dolor sit amet, consectetur",
-  //   audio:
-  //     "http://localhost:5000/audio/e831bbb5-5b01-4aa7-8bec-95d3554a9c97.mp3",
-  // };
+ 
   const { pause, volume, duration, active, currentTime } = useTypedSelector(
     (state) => state.player
   );
@@ -45,12 +38,13 @@ const Player = () => {
       audio = new Audio();
     } else {
       setAudio();
-      // or play() if you want not to play immediately
-      playTrack();
-      audio.play();
+      
+       play() //if you want not to play immediately
+
+      // playTrack();// play
+      // audio.play();
     }
   }, [active]);
-  console.log("active: ", active);
 
   const setAudio = () => {
     if (active) {
@@ -61,10 +55,11 @@ const Player = () => {
       }; //minutes seconds format
 
       audio.onloadedmetadata = () => {
-        setDuration(minSec(Math.ceil(audio.duration)));
+        setDuration((Math.ceil(audio.duration)));
+        // audio.currentTime = 0; // Reset progress bar to the start
       };
       audio.ontimeupdate = () => {
-        setCurrentTime(minSec(Math.ceil(audio.currentTime)));
+        setCurrentTime((Math.ceil(audio.currentTime)));
       };
     }
   };
@@ -90,7 +85,7 @@ const Player = () => {
         <div>{active?.name}</div>
         <div style={{ fontSize: "12px", color: "gray" }}>{active?.artist}</div>
       </Grid>
-      <TrackProgress
+      <TrackProgress        
         left={currentTime}
         right={duration}
         onChange={changeCurrentTime}

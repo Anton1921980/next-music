@@ -14,8 +14,7 @@ interface TrackItemProps {
 
 const TrackItem: React.FC<TrackItemProps> = ({
   track,
-  active = false,
-  key,
+  active = false,  
 }) => {
   const router = useRouter();
 

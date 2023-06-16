@@ -9,11 +9,13 @@ interface TrackProgressProps {
 const TrackProgress: React.FC<TrackProgressProps> = ({
   left,
   right,
+ 
   onChange,
 }) => {
+
   return (
     <div style={{ display: "flex" }}>
-      <input type="range" min={0} max={right} onChange={onChange}></input>
+      <input type="range" min={0} max={right} onChange={onChange} value={left}></input>
       <div>
         {left} / {right}
       </div>

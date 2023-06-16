@@ -31,7 +31,7 @@ const TrackPage = ({ serverTrack }) => {
   };
 console.log("comm",track)
   return (
-    <MainLayout>
+    <MainLayout title={'music tracks host: '+ track.name + '-' + track.artist}>
       <Button variant="outlined" onClick={() => router.push("/tracks")}>
         to tracklist
       </Button>

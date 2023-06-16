@@ -1,16 +1,34 @@
 import MainLayout from "@/layouts/MainLayout";
-import React from "react";
-import { Box, Button, Card, Grid } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Button, Card, Grid, TextField } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { useRouter } from "next/router";
 import TrackList from "@/components/TrackList";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useActions } from "@/hooks/useActions";
-import { fetchTracks } from "@/store/actions-creators/track";
+import { fetchTracks, searchTracks } from "@/store/actions-creators/track";
 import { NextThunkDispatch, wrapper } from "@/store";
+import { useDispatch } from "react-redux";
 
 const Index = () => {
   const router = useRouter();
   const { tracks, error } = useTypedSelector((state) => state.track);
+  const [query, set$query] = useState<string>("");
+  const [timer, set$timer] = useState(null);
+
+  const dispatch = useDispatch() as NextThunkDispatch;
+
+  const search = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    set$query(e.target.value);
+    if (timer) {
+      clearTimeout(timer);
+    }
+    set$timer(
+      setTimeout(async () => {
+        await dispatch(await searchTracks(e.target.value));
+      }, 1000)
+    );
+  };
 
   if (error) {
     return (
@@ -20,35 +38,49 @@ const Index = () => {
     );
   }
 
-  // const tracks: ITrack[] = [
-  //   { _id: 1, name: "track1", artist: "Dre" },
-  //   {
-  //     _id: 2,
-  //     name: "track2",
-  //     artist: "2-PAC",
-  //     comments: ["rewrelkf", "fjkrhgkfghk"],
-  //   },
-  //   {
-  //     name: "track3",
-  //     artist: "Coolio",
-  //     comments: [{ username: "www", text: "ewftrrrrrrrr" }],
-  //     text: "lorem ipsum dolor sit amet, consectetur",
-  //     audio:
-  //       "http://localhost:5000/audio/b84910f2-4520-4f4a-a2a6-4f751a01fb6c.mp3",
-  //   }
-  // ];
   return (
     <>
-      <MainLayout>
+      <MainLayout title={"track list from music tracks hosting"}>
         <Grid container justifyContent="center">
-          <Card style={{ width: "80%" }}>
+          <Card style={{ width: "85%" }}>
             <Box p={3}>
-              <Grid container justifyContent="space-between">
+              <Grid
+                container
+                justifyContent="space-between"
+                alignItems="center"
+              >
                 <h1>Track list</h1>
-                <Button onClick={() => router.push("/tracks/create")}>
+
+                <Button
+                  style={{ height: "auto" }}
+                  variant={"outlined"}
+                  onClick={() => router.push("/tracks/create")}
+                >
                   upload
                 </Button>
               </Grid>
+              <TextField
+                style={{width:"98%", marginLeft: 10, marginTop:15}}
+                value={query}
+                onChange={search}
+                label={
+                  <>
+                    <span>
+                      <SearchIcon />
+                    </span>
+                    <span
+                      style={{
+                        position: "relative",
+                        bottom: 5,
+                        marginLeft: 2,
+                        fontSize: 14,
+                      }}
+                    >
+                      track
+                    </span>
+                  </>
+                }
+              />
             </Box>
             <TrackList tracks={tracks} />
           </Card>
