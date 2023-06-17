@@ -19,6 +19,14 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { useRouter } from "next/router";
+import { Button, TextField } from "@mui/material";
+import { AddSharp, HdrPlus, PlusOne, PlusOneSharp } from "@mui/icons-material";
+import Playlists from "./Playlists";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { fetchPlaylists } from "@/store/actions-creators/playlist";
+import { NextThunkDispatch, wrapper } from "@/store";
+import { useInput } from "@/hooks/useInpute";
+import axios from "axios";
 
 const drawerWidth = 240;
 
@@ -74,20 +82,41 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function Navbar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const [visible, set$visible] = React.useState(false);
+  console.log("visible: ", visible);
+  const name = useInput("");
+
+  const router = useRouter();
+  const menuItems = [
+    { text: "Main", href: "/" },
+    { text: "Tracks", href: "/tracks" },
+    // { text: "Playlists", href: "/albums" },
+  ];
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const router= useRouter();
-  const menuItems = [
-    { text: "Main", href: "/" },
-    { text: "Tracks", href: "/tracks" },
-    { text: "Albums", href: "/albums" },
-  ];
+  const handleVisible = () => {
+    set$visible(!visible);
+  };
+  const { playlists, error: playlistError } = useTypedSelector(
+    (state) => state.playlist
+  );
+
+  const addPlaylist = () => {
+    console.log("name: ", name.value);
+    axios
+      .post("http://localhost:5000/tracks/playlist", { name: name.value })
+      .then((response) => router.push("/tracks").then(handleVisible))
+      .catch((error) => console.log("Error", error));
+  };
+
+  if (playlistError) {
+    return <h1>{playlistError}</h1>;
+  }
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -103,7 +132,7 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-         TrackHOST
+            TrackHOST
           </Typography>
         </Toolbar>
       </AppBar>
@@ -131,9 +160,9 @@ export default function Navbar() {
         </DrawerHeader>
         <Divider />
         <List>
-          {menuItems.map(({text,href},index) => (
+          {menuItems?.map(({ text, href }, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton key={href} onClick={()=>router.push(href)}>
+              <ListItemButton key={href} onClick={() => router.push(href)}>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
@@ -143,19 +172,53 @@ export default function Navbar() {
           ))}
         </List>
         <Divider />
-      
+        {playlists?.length && (
+          <>
+            <div
+              style={{
+                display: visible ? "block" : "none",
+                width: "80%",
+                margin: "0 auto",
+              }}
+            >
+              <TextField
+                {...name}
+                style={{ marginTop: 10 }}
+                label={"Playlist name"}
+                helperText={"at least 3 letters required"}
+              />
+              {/* <Button onClick={addPlaylist}>Add</Button> */}
+            </div>
+            <Button
+              disabled={visible && name.value.length < 3}
+              style={{ height: "auto", margin: "0 auto", marginTop: 30 }}
+              variant="outlined"
+              onClick={!visible ? handleVisible : addPlaylist}
+            >
+              <>
+                <span style={{ marginTop: 7 }}>
+                  <AddSharp />
+                </span>
+                {!visible ? (
+                  <span>&nbsp; Playlist</span>
+                ) : (
+                  <span>&nbsp; Add</span>
+                )}
+              </>
+            </Button>
+            <Playlists playlists={playlists} />
+          </>
+        )}
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        {/* <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-          ullamcorper
-        </Typography> */}
       </Main>
     </Box>
   );
 }
+// export const getServerSideProps = wrapper.getServerSideProps(
+//   async ({ store }) => {
+//     const dispatch = store?.dispatch as NextThunkDispatch;
+//     await dispatch(await fetchPlaylists());
+//   }
+// );

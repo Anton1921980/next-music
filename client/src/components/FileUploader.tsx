@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 
 interface FileUploaderProps {
+  setPictureUrl: Function;
+  setAudioName: Function;
   setFile: Function;
   accept: string;
   children: any;
@@ -8,13 +10,19 @@ interface FileUploaderProps {
 
 const FileUploader: React.FC<FileUploaderProps> = ({
   setFile,
+  setPictureUrl,
+  setAudioName,
   accept,
   children,
 }) => {
-  const ref = useRef<HTMLInputElement>();
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target?.files[0]);
+    (e.target?.files[0]?.type === "image/jpeg")
+      ? setPictureUrl(URL.createObjectURL(e.target?.files[0]))
+      : setAudioName(e.target?.files[0].name);
   };
+  const ref = useRef<HTMLInputElement>();
+
   return (
     <div onClick={() => ref?.current?.click()}>
       <input

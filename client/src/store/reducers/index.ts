@@ -3,10 +3,14 @@ import { combineReducers } from "redux";
 import { playerReducer } from "./playerRreducer";
 import {HYDRATE} from 'next-redux-wrapper';
 import { trackReducer } from "./trackReducer";
+import { playlistReducer } from "./playlistReducer";
+import { playlistTrackReducer } from "./playlistTrackReducer";
 
  const rootReducer = combineReducers({
     player: playerReducer,
-    track: trackReducer
+    track: trackReducer,
+    playlist: playlistReducer,
+    playlistTrack: playlistTrackReducer
 })
 export const reducer = (state, action) => {
     if (action.type === HYDRATE) {

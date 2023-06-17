@@ -9,10 +9,19 @@ import { useActions } from "@/hooks/useActions";
 import { fetchTracks, searchTracks } from "@/store/actions-creators/track";
 import { NextThunkDispatch, wrapper } from "@/store";
 import { useDispatch } from "react-redux";
+import { fetchPlaylists } from "@/store/actions-creators/playlist";
+import Playlists from "@/components/Playlists";
+import { AddSharp } from "@mui/icons-material";
 
 const Index = () => {
   const router = useRouter();
-  const { tracks, error } = useTypedSelector((state) => state.track);
+  const { tracks, error: trackError } = useTypedSelector(
+    (state) => state.track
+  );
+  const { playlists, error: playlistError } = useTypedSelector(
+    (state) => state.playlist
+  );
+
   const [query, set$query] = useState<string>("");
   const [timer, set$timer] = useState(null);
 
@@ -30,10 +39,10 @@ const Index = () => {
     );
   };
 
-  if (error) {
+  if (trackError || playlistError) {
     return (
       <MainLayout>
-        <h1>{error}</h1>
+        <h1>{trackError || playlistError}</h1>
       </MainLayout>
     );
   }
@@ -50,17 +59,21 @@ const Index = () => {
                 alignItems="center"
               >
                 <h1>Track list</h1>
-
                 <Button
                   style={{ height: "auto" }}
-                  variant={"outlined"}
+                  variant="outlined"
                   onClick={() => router.push("/tracks/create")}
                 >
-                  upload
+                  <>
+                    <span style={{ marginTop: 7 }}>
+                      <AddSharp />
+                    </span>
+                    <span>&nbsp; Track</span>
+                  </>
                 </Button>
               </Grid>
               <TextField
-                style={{width:"98%", marginLeft: 10, marginTop:15}}
+                style={{ width: "98%", marginLeft: 10, marginTop: 15 }}
                 value={query}
                 onChange={search}
                 label={
@@ -82,6 +95,7 @@ const Index = () => {
                 }
               />
             </Box>
+            {/* <Playlists playlists={playlists} /> */}
             <TrackList tracks={tracks} />
           </Card>
         </Grid>
@@ -95,5 +109,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
   async ({ store }) => {
     const dispatch = store?.dispatch as NextThunkDispatch;
     await dispatch(await fetchTracks());
+    await dispatch(await fetchPlaylists());
   }
 );
