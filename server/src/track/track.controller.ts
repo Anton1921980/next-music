@@ -74,10 +74,10 @@ export class TrackController {
   getOne(@Param('id') id: ObjectId) {
     return this.trackService.getOne(id);
   }
-  // @Put(':id')
-  // edit(@Param('id') id: ObjectId, @Body() playlist_id: string) {
-  //   return this.trackService.edit(id, playlist_id);
-  // }
+  @Put(':id')
+  edit(@Param('id') id: ObjectId, @Query('playlist') playlist: string,) {
+    return this.trackService.edit(id, playlist);
+  }
   @Delete(':id')
   delete(@Param('id') id: ObjectId) {
     return this.trackService.delete(id);

@@ -1,11 +1,25 @@
-.player {
-  width: 80%;
-  height: 60px;
+.playerContainer{
+  display:block;
+  width: 100%;
+  height: 80px;
   position: fixed;
   bottom: 0;
-  left: 240px;
+  z-index:1000000 ;
+}
+
+
+.player {
+  // width: 100%;
+  height: 80px;
+  // position: fixed;
+  // bottom: 0;
+  // left: 240px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 0 10px;
-  background-color: lightgray;
+  background-color: #212121;
+  // background-image: linear-gradient( rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0.6) 100% );
+  color: #909090;
+z-index:1000000 ;
 }

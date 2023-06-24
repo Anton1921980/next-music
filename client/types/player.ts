@@ -1,3 +1,4 @@
+import { IPlaylist } from "./playlist";
 import { ITrack } from "./track";
 
 export interface PlayerState{
@@ -6,6 +7,7 @@ export interface PlayerState{
     duration: number;
     currentTime: number;
     pause: boolean;
+    currentPlaylist: null | number
 }
 
 export enum PlayerActionTypes{
@@ -15,6 +17,7 @@ export enum PlayerActionTypes{
     SET_DURATION = "SET_DURATION",
     SET_CURRENT_TIME = "SET_CURRENT_TIME",
     SET_VOLUME = "SET_VOLUME",
+    SET_CURRENT_PLAYLIST = "SET_CURRENT_PLAYLIST",
 }
 
 interface PlayAction{
@@ -39,11 +42,15 @@ interface SetVolumeAction{
     type: PlayerActionTypes.SET_VOLUME;
     payload: number;
 }
-
+interface SetCurrentPlaylistAction{
+    type: PlayerActionTypes.SET_CURRENT_PLAYLIST;
+    payload: number;
+}
 export type PlayerAction =
     PlayAction|
     PauseAction|
     SetActiveAction|
     SetDurationAction|
     SetCurrentTimeAction|
-    SetVolumeAction
+    SetVolumeAction|
+    SetCurrentPlaylistAction

@@ -35,14 +35,12 @@ export const searchTracks = (query: string) => {
 };
 
 
-export const editTrack = (id: number, playlist: string) => {
-    console.log("id: ", id);
+export const editTrack = (id: number, playlist: string) => {  
     return async (
         dispatch: Dispatch<TrackAction>
     ) => {
-        try {
-            console.log("id2: ", id);
-            const response = await axios.put(`http://localhost:5000/tracks/${id}`, playlist);
+        try {            
+            const response = await axios.put(`http://localhost:5000/tracks/${id}/?playlist=${playlist}`);
             console.log("response: ", response.data);
             dispatch({ type: TrackActionTypes.EDIT_TRACK, payload: response.data });
         } catch (e) {

@@ -1,12 +1,12 @@
 import MainLayout from "@/layouts/MainLayout";
 import React, { useState } from "react";
 import { Box, Button, Card, Grid, TextField } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+
 import { useRouter } from "next/router";
 import TrackList from "@/components/TrackList";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useActions } from "@/hooks/useActions";
-import { fetchTracks, searchTracks } from "@/store/actions-creators/track";
+import { editTrack, fetchTracks } from "@/store/actions-creators/track";
 import { NextThunkDispatch, wrapper } from "@/store";
 import { useDispatch } from "react-redux";
 import { fetchPlaylists } from "@/store/actions-creators/playlist";
@@ -22,23 +22,6 @@ const Index = () => {
     (state) => state.playlist
   );
 
-  const [query, set$query] = useState<string>("");
-  const [timer, set$timer] = useState(null);
-
-  const dispatch = useDispatch() as NextThunkDispatch;
-
-  const search = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    set$query(e.target.value);
-    if (timer) {
-      clearTimeout(timer);
-    }
-    set$timer(
-      setTimeout(async () => {
-        await dispatch(await searchTracks(e.target.value));
-      }, 1000)
-    );
-  };
-
   if (trackError || playlistError) {
     return (
       <MainLayout>
@@ -49,19 +32,38 @@ const Index = () => {
 
   return (
     <>
-      <MainLayout title={"track list from music tracks hosting"}>
-        <Grid container justifyContent="center">
-          <Card style={{ width: "85%" }}>
-            <Box p={3}>
+      <MainLayout title={"all tracks from music tracks hosting"}>
+        <Grid
+          container-fluid          
+          justifyContent="center"
+          sx={{ backgroundColor: "inherit", marginBottom: "20px" }}
+        >
+          <Card 
+          // style={{ width: "80%" }}
+          >
+            <Box p={3} sx={{ backgroundColor: "inherit" }}>
               <Grid
-                container
+                container-fluid
                 justifyContent="space-between"
                 alignItems="center"
+                sx={{display:"flex"}}
               >
                 <h1>Track list</h1>
                 <Button
-                  style={{ height: "auto" }}
-                  variant="outlined"
+                  sx={{
+                    height: "auto",
+                    color: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    borderRadius: 15,
+                    paddingLeft: 5,
+                    paddingRight: 5,
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    },
+                  }}
+                  // variant="outlined"
                   onClick={() => router.push("/tracks/create")}
                 >
                   <>
@@ -72,31 +74,9 @@ const Index = () => {
                   </>
                 </Button>
               </Grid>
-              <TextField
-                style={{ width: "98%", marginLeft: 10, marginTop: 15 }}
-                value={query}
-                onChange={search}
-                label={
-                  <>
-                    <span>
-                      <SearchIcon />
-                    </span>
-                    <span
-                      style={{
-                        position: "relative",
-                        bottom: 5,
-                        marginLeft: 2,
-                        fontSize: 14,
-                      }}
-                    >
-                      track
-                    </span>
-                  </>
-                }
-              />
             </Box>
             {/* <Playlists playlists={playlists} /> */}
-            <TrackList tracks={tracks} />
+            <TrackList tracks={tracks} playlists={playlists} />
           </Card>
         </Grid>
       </MainLayout>

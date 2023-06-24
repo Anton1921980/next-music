@@ -16,17 +16,22 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import { useRouter } from "next/router";
-import { Button, TextField } from "@mui/material";
-import { AddSharp, HdrPlus, PlusOne, PlusOneSharp } from "@mui/icons-material";
+import { Button, Collapse, Container, TextField } from "@mui/material";
+
+import {
+  AddSharp,
+  ExpandLess,
+  ExpandMore,
+  PlaylistAddCheck,
+  QueueMusic,
+  Radio,
+} from "@mui/icons-material";
 import Playlists from "./Playlists";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { fetchPlaylists } from "@/store/actions-creators/playlist";
-import { NextThunkDispatch, wrapper } from "@/store";
 import { useInput } from "@/hooks/useInpute";
 import axios from "axios";
+import Search from "./Search";
 
 const drawerWidth = 240;
 
@@ -56,6 +61,7 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
+  backgroundImage: "none",
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -79,14 +85,16 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function Navbar() {
+export default function Navbar({children}) {
+  console.log("children: ", children);
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [visible, set$visible] = React.useState(false);
-  console.log("visible: ", visible);
+  const [show, set$show] = React.useState(true);
+  const [clicked, set$clicked] = React.useState("");
   const name = useInput("");
-
   const router = useRouter();
+
   const menuItems = [
     { text: "Main", href: "/" },
     { text: "Tracks", href: "/tracks" },
@@ -101,6 +109,9 @@ export default function Navbar() {
   };
   const handleVisible = () => {
     set$visible(!visible);
+  };
+  const handlePlaylists = () => {
+    set$show(!show);
   };
   const { playlists, error: playlistError } = useTypedSelector(
     (state) => state.playlist
@@ -129,14 +140,33 @@ export default function Navbar() {
             edge="start"
             sx={{ mr: 2, ...(open && { display: "none" }) }}
           >
-            <MenuIcon />
+            <MenuIcon style={{ color: "white" }} />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            TrackHOST
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ mr: 2, ...(open && { display: "none" }) }}
+          >
+            <img
+              src="/logo.png"
+              alt="logo"
+              style={{ height: 25, position: "relative", top: 5 }}
+            />
+            <span style={{ fontSize: "25px", letterSpacing: "-1.5px" }}>
+              YouTrack
+            </span>
           </Typography>
+          {playlists?.length > 0 && <Search />}
         </Toolbar>
       </AppBar>
       <Drawer
+        // PaperProps={{
+        //   sx: {
+        //     backgroundColor: "darkblue",
+        //     color: "white",
+        //   },
+        // }}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -150,68 +180,149 @@ export default function Navbar() {
         open={open}
       >
         <DrawerHeader>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ margin: "0 auto" }}
+          >
+            <img
+              src="/logo.png"
+              alt="logo"
+              style={{ height: 25, position: "relative", top: 5 }}
+            />
+            <span style={{ fontSize: "25px", letterSpacing: "-1.5px" }}>
+              YouTrack
+            </span>
+          </Typography>
+
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
+              <ChevronLeftIcon style={{ color: "white" }} />
             ) : (
-              <ChevronRightIcon />
+              <ChevronRightIcon style={{ color: "white" }} />
             )}
           </IconButton>
         </DrawerHeader>
-        <Divider />
+        <Divider
+        // sx={{borderColor:'rgba(255, 255, 255, 0.1)'}}
+        />
         <List>
           {menuItems?.map(({ text, href }, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton key={href} onClick={() => router.push(href)}>
+            <ListItem selected={router.pathname===href} key={text} disablePadding>
+              <ListItemButton            
+              key={href} onClick={() => {router.push(href);}}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index % 2 === 0 ? (
+                    <Radio style={{ color: "white" }} />
+                  ) : (
+                    <QueueMusic style={{ color: "white" }} />
+                  )}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
           ))}
-        </List>
-        <Divider />
-        {playlists?.length && (
-          <>
-            <div
-              style={{
-                display: visible ? "block" : "none",
-                width: "80%",
-                margin: "0 auto",
-              }}
-            >
-              <TextField
-                {...name}
-                style={{ marginTop: 10 }}
-                label={"Playlist name"}
-                helperText={"at least 3 letters required"}
-              />
-              {/* <Button onClick={addPlaylist}>Add</Button> */}
+          <Divider
+          // sx={{borderColor:'rgba(255, 255, 255, 0.1)'}}
+          />
+          {playlists.length && (
+            <div style={{ marginLeft: 20 }}>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={handlePlaylists}
+                  style={{ justifyContent: "space-between" }}
+                >
+                  <ListItemIcon>
+                    <PlaylistAddCheck style={{ color: "white" }} />
+                  </ListItemIcon>
+                  <ListItemText primary={"Playlists"} />
+                  {show ? (
+                    <ExpandLess style={{ color: "white" }} />
+                  ) : (
+                    <ExpandMore style={{ color: "white" }} />
+                  )}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={show} timeout="auto" unmountOnExit>
+                <div
+                  style={{
+                    display: visible ? "block" : "none",
+                    width: "80%",
+                    margin: "0 auto",
+                  }}
+                >
+                  <TextField
+                    {...name}
+                    style={{ marginTop: 10 }}
+                    label={"Playlist name"}
+                    helperText={"at least 3 letters required"}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: 15,
+                  }}
+                >
+                  <Button
+                    disabled={visible && name.value.length < 3}
+                    sx={{
+                      height: "auto",
+                      width: !visible ? "95%" : "auto",
+                      color: "white",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      borderRadius: 15,
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.05)",
+                      },
+                    }}
+                    // variant="outlined"
+                    onClick={!visible ? handleVisible : addPlaylist}
+                  >
+                    <>
+                      <span style={{ marginTop: 7 }}>
+                        <AddSharp />
+                      </span>
+                      {!visible ? (
+                        <span>&nbsp; Playlist</span>
+                      ) : (
+                        <span>&nbsp; Add</span>
+                      )}
+                    </>
+                  </Button>
+                  {visible && (
+                    <Button
+                      sx={{
+                        marginLeft: "2px",
+                        height: "auto",
+                        color: "white",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                        borderRadius: 15,
+                        "&:hover": {
+                          backgroundColor: "rgba(255, 255, 255, 0.05)",
+                        },
+                      }}
+                      onClick={handleVisible}
+                    >
+                      X CLOSE
+                    </Button>
+                  )}
+                </div>
+                <Playlists playlists={playlists} />
+              </Collapse>
             </div>
-            <Button
-              disabled={visible && name.value.length < 3}
-              style={{ height: "auto", margin: "0 auto", marginTop: 30 }}
-              variant="outlined"
-              onClick={!visible ? handleVisible : addPlaylist}
-            >
-              <>
-                <span style={{ marginTop: 7 }}>
-                  <AddSharp />
-                </span>
-                {!visible ? (
-                  <span>&nbsp; Playlist</span>
-                ) : (
-                  <span>&nbsp; Add</span>
-                )}
-              </>
-            </Button>
-            <Playlists playlists={playlists} />
-          </>
-        )}
+          )}
+        </List>
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
+        <Container>{children}</Container>
       </Main>
     </Box>
   );

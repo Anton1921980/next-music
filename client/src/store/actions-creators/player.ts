@@ -1,4 +1,5 @@
 import { PlayerAction, PlayerActionTypes } from "../../../types/player";
+import { IPlaylist } from "../../../types/playlist";
 import { ITrack } from "../../../types/track";
 
 
@@ -21,4 +22,7 @@ export const setCurrentTime = (payload: number): PlayerAction => {
 }
 export const setActiveTrack = (payload: ITrack): PlayerAction => {
     return {type: PlayerActionTypes.SET_ACTIVE, payload}
+}
+export const setCurrentPlaylist = (payload: number): PlayerAction => {
+    return {type: PlayerActionTypes.SET_CURRENT_PLAYLIST, payload}
 }

@@ -1,4 +1,3 @@
-import { editTrack } from './../../../client/src/store/actions-creators/track';
 import { FileService, FileType } from './../file/file.service';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,7 +16,7 @@ export class TrackService {
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
     @InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>,
     private fileService: FileService,
-  ) { }
+  ) {}
   async create(dto: CreateTrackDto, picture, audio): Promise<Track> {
     const audioPath = await this.fileService.createFile(FileType.AUDIO, audio);
     const picturePath = await this.fileService.createFile(
@@ -33,10 +32,10 @@ export class TrackService {
     return track;
   }
 
-  async getAll(count = 3, offset = 0, playlist: string): Promise<Track[]> {
+  async getAll(count = 10, offset = 0, playlist: string): Promise<Track[]> {
     let query = {};
     console.log('playlist: ', playlist, typeof playlist);
-    if (playlist == 'undefined' ||  undefined ) {
+    if (playlist == 'undefined' || undefined) {
       query = {};
     } else if (playlist?.includes('s=')) {
       query = { playlists: { $ne: playlist.substring(2) } };
@@ -65,12 +64,17 @@ export class TrackService {
     await track.save();
     return comment;
   }
-  // async edit(id: ObjectId, playlist_id: string): Promise<Track> {
-  //   const track = await this.trackModel.findById(id);
-  //   track.playlists.push(playlist_id);
-  //   await track.save();
-  //   return track;
-  // }
+  async edit(id: ObjectId, playlist: string): Promise<Track> {
+    const track = await this.trackModel.findById(id);
+    const index = track.playlists.indexOf(playlist);
+    if (index !== -1) {
+      track.playlists.splice(index, 1);
+    } else {
+      track.playlists.push(playlist);
+    }
+    await track.save();
+    return track;
+  }
   async addPlaylist(dto: CreatePlaylistDto): Promise<Playlist> {
     const playlist = await this.playlistModel.create({ ...dto });
     return playlist;

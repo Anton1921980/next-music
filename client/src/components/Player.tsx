@@ -1,19 +1,33 @@
-import { Pause, PlayArrow, VolumeUp } from "@mui/icons-material";
-import { Grid, IconButton } from "@mui/material";
+import {
+  Pause,
+  PlayArrow,
+  SkipNext,
+  SkipPrevious,
+  ThumbDownAlt,
+  ThumbUpAlt,
+  VolumeUp,
+} from "@mui/icons-material";
+import { Box, Grid, IconButton } from "@mui/material";
 import React, { useEffect } from "react";
 import styles from "../styles/Player.module.scss";
 import TrackProgress from "./TrackProgress";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useActions } from "@/hooks/useActions";
 import { setVolume } from "@/store/actions-creators/player";
+import Image from "next/image";
 
 let audio; //in browser
 
 const Player = () => {
- 
-  const { pause, volume, duration, active, currentTime } = useTypedSelector(
-    (state) => state.player
+  const { pause, volume, duration, active, currentPlaylist, currentTime } =
+    useTypedSelector((state) => state.player);
+  const { tracks: playlistTracks, error: playlistTrackError } =
+    useTypedSelector((state) => state.playlistTrack);
+  const { tracks, error: trackError } = useTypedSelector(
+    (state) => state.track
   );
+
+  // знайти у масиві трек що поряд зробити активним
   const {
     pauseTrack,
     playTrack,
@@ -32,14 +46,52 @@ const Player = () => {
       audio.pause();
     }
   };
-  
+  console.log("pause: ", pause);
+  const tracklist = playlistTracks?.find((track) => track._id === active?._id)
+    ? playlistTracks
+    : tracks;
+
+  const playPrev = () => {
+    let currentIndex = tracklist.findIndex((track) => track._id === active._id);
+    let prevTrackIndex =
+      currentIndex > 0 ? currentIndex - 1 : tracklist.length - 1;
+    let prevTrack = tracklist[prevTrackIndex];
+    setActiveTrack(prevTrack);
+    pauseTrack();
+    // if (!pause) {
+    //   playTrack();
+    //   audio.play();
+    // } else {
+    //   pauseTrack();
+    //   audio.pause();
+    // }
+  };
+
+  const playNext = () => {
+    let currentIndex = tracklist.findIndex((track) => track._id === active._id);
+    let nextTrackIndex =
+      currentIndex < tracklist.length - 1 ? currentIndex + 1 : 0;
+    let nextTrack = tracklist[nextTrackIndex];
+    setActiveTrack(nextTrack);
+    pauseTrack();
+    // if (!pause) {
+    //   playTrack();
+    //   // audio.play();
+    // } else {
+    //   pauseTrack();
+    //   // audio.pause();
+    // }
+  };
+
+  console.log("currentPlaylist: ", currentPlaylist);
+
   useEffect(() => {
     if (!audio) {
       audio = new Audio();
     } else {
       setAudio();
-      
-       play() //if you want not to play immediately
+
+      // play(); //if you want not to play immediately
 
       // playTrack();// play
       // audio.play();
@@ -48,18 +100,14 @@ const Player = () => {
 
   const setAudio = () => {
     if (active) {
-      audio.src = 'http://localhost:5000/' + active.audio;
+      audio.src = "http://localhost:5000/" + active.audio;
       audio.volume = volume / 100; //must be from 0-1
-      const minSec = (s) => {
-        return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
-      }; //minutes seconds format
-
       audio.onloadedmetadata = () => {
-        setDuration((Math.ceil(audio.duration)));
+        setDuration(Math.ceil(audio.duration));
         // audio.currentTime = 0; // Reset progress bar to the start
       };
       audio.ontimeupdate = () => {
-        setCurrentTime((Math.ceil(audio.currentTime)));
+        setCurrentTime(Math.ceil(audio.currentTime));
       };
     }
   };
@@ -77,21 +125,67 @@ const Player = () => {
     return null;
   }
   return (
-    <div className={styles.player}>
-      <IconButton onClick={play}>
-        {!pause ? <Pause /> : <PlayArrow />}
-      </IconButton>
-      <Grid container direction="column" style={{ width: 200, margin: "20px" }}>
-        <div>{active?.name}</div>
-        <div style={{ fontSize: "12px", color: "gray" }}>{active?.artist}</div>
-      </Grid>
-      <TrackProgress        
+    <div className={styles.playerContainer}>
+      <TrackProgress
+        progress={true}
         left={currentTime}
         right={duration}
         onChange={changeCurrentTime}
       />
-      <VolumeUp style={{ marginLeft: "auto" }} />
-      <TrackProgress left={volume} right={100} onChange={changeVolume} />
+
+      <div className={styles.player}>
+        <Grid container-fluid>
+          <IconButton onClick={playPrev}>{<SkipPrevious />}</IconButton>
+          <IconButton onClick={play}>
+            {!pause ? (
+              <Pause sx={{ fontSize: "40px" }} />
+            ) : (
+              <PlayArrow sx={{ fontSize: "40px" }} />
+            )}
+          </IconButton>
+          <IconButton onClick={playNext}>{<SkipNext />}</IconButton>
+        </Grid>
+        <Box sx={{ display: "flex"}}>
+          {active?.picture && (
+            <Image
+              style={{ marginTop: "20px" }}
+              width={50}
+              height={50}
+              src={"http://localhost:5000/" + active?.picture}
+              alt=""
+            />
+          )}
+          <Grid
+            container
+            direction="column"
+            style={{
+              width: 100,
+              margin: "20px",
+            }}
+          >
+            <div style={{fontWeight:"600"}}>{active?.name}</div>
+            <div style={{ fontSize: "12px", color: "gray" }}>
+              {active?.artist}
+            </div>
+          </Grid>
+          <IconButton onClick={play}>  
+          <ThumbUpAlt/>          
+          </IconButton>
+          
+          <IconButton onClick={play}> 
+          <ThumbDownAlt/>           
+          </IconButton>
+        </Box>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <VolumeUp style={{ marginLeft: "auto" }} />
+          <TrackProgress
+            progress={false}
+            left={volume}
+            right={100}
+            onChange={changeVolume}
+          />
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,8 @@
+import { playTrack } from './../actions-creators/player';
 import { TrackAction, TrackActionTypes, TrackState } from "../../../types/track"
 
 const initialState: TrackState = {
-    tracks: [],
+    tracks: [],    
     error: ''
 }
 
@@ -12,7 +13,7 @@ export const trackReducer = (state = initialState, action: TrackAction) => {
         case TrackActionTypes.FETCH_TRACKS:
             return { error: '', tracks: action.payload }
         case TrackActionTypes.EDIT_TRACK:
-            return { error: '', tracks: action.payload }
+            return { error: '', tracks: state.tracks.filter(track => track._id != action.payload)}
         case TrackActionTypes.DELETE_TRACK:
             return { error: '', tracks: state.tracks.filter(track => track._id != action.payload) }
 

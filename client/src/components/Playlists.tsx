@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Card, Grid } from "@mui/material";
+import { Box, Button, Card, Grid, MenuItem } from "@mui/material";
 import { IPlaylist } from "../../types/playlist";
 import { useRouter } from "next/router";
 
@@ -9,23 +9,19 @@ interface PlaylistsProps {
 
 const Playlists: React.FC<PlaylistsProps> = ({ playlists }) => {
 
-  const router = useRouter(); 
+  const router = useRouter();
 
-  const choosePlaylist = (id) => {
-    console.log("playlist: ", id);
-
-    router.push(`/playlist/${id}`)
-    //додати id до стора
-  }
   return (
     <Grid container direction="column">
       <Box p={2}>
-        Playlists:
         {playlists?.map((playlist) => (
-          <div 
-          key={playlist?._id}        
-          onClick={()=>choosePlaylist(playlist?._id)}          
-          >{playlist?.name}</div>
+          <MenuItem
+            selected={router.asPath == `/playlist/${playlist?._id}`}    
+            key={playlist?._id}
+            onClick={() =>  router.push(`/playlist/${playlist?._id}`)}
+          >
+            {playlist?.name}
+          </MenuItem>
         ))}
       </Box>
     </Grid>
@@ -33,3 +29,4 @@ const Playlists: React.FC<PlaylistsProps> = ({ playlists }) => {
 };
 
 export default Playlists;
+
