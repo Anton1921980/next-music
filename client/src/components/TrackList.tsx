@@ -15,7 +15,7 @@ const TrackList: React.FC<TrackListProps> = ({
   playlist,
   playlists,
 }) => {
-  console.log("tracks: ", tracks);
+  console.log("tracksaaa: ", tracks);
   return (
     <Grid container direction="column" sx={{ backgroundColor: "inherit" }}>
       {/* <Box p={2}> */}

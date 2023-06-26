@@ -86,9 +86,9 @@ const Player = ({ store }) => {
 
     // Fetch the updated tracklist
     router.pathname !== "/tracks"
-      ? await dispatch(await fetchTracks(`s=${tracklist?._id}`))
+      ? await dispatch(await fetchTracks(`s=${currentPlaylist}`))
       : await dispatch(await fetchTracks());
-    await dispatch(await fetchPlaylistTracks(tracklist?._id));  
+    await dispatch(await fetchPlaylistTracks(currentPlaylist));  
   };
 
   useEffect(() => {
