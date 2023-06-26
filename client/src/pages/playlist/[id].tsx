@@ -15,12 +15,12 @@ import {
 import Playlists from "@/components/Playlists";
 import { AddSharp } from "@mui/icons-material";
 import { setCurrentPlaylist } from "@/store/actions-creators/player";
+import Image from "next/image";
 
 const Index = ({ serverPlaylist }) => {
+
   console.log("serverPlaylist: ", serverPlaylist);
-
-  const [playlist, set$playlist] = React.useState<number>(serverPlaylist);
-
+  
   const router = useRouter();
 
   const { tracks, error: trackError } = useTypedSelector(
@@ -31,9 +31,6 @@ const Index = ({ serverPlaylist }) => {
   );
   const { tracks: playlistTracks, error: playlistTrackError } =
     useTypedSelector((state) => state.playlistTrack);
-
-
-
 
   if (trackError || playlistError || playlistTrackError) {
     return (
@@ -57,12 +54,32 @@ const Index = ({ serverPlaylist }) => {
             <Box p={3} sx={{ backgroundColor: "inherit" }}>
               <Grid
                 container-fluid
-                justifyContent="space-between"
+                justifyContent="flex-start"
                 alignItems="center"
                 sx={{ display: "flex" }}
               >
+                <Grid container sx={{ width: "200px" }}>
+                  {playlistTracks.slice(0, 4)?.map((track, index) => (
+                    <Grid
+                      item
+                      xs={6}
+                      key={index}
+                      sx={{ width: "100px", lineHeight: 0.8 }}
+                    >
+                      {track?.picture && (
+                        <Image
+                          width={100}
+                          height={100}
+                          src={"http://localhost:5000/" + track.picture}
+                          alt=""
+                        />
+                      )}
+                    </Grid>
+                  ))}
+                </Grid>
+                <Grid container sx={{ flexDirection: 'column' , marginLeft:'50px' , width: '200px'}}>
                 <h1>
-                  Playlist:{" "}
+                  {/* Playlist:{" "} */}
                   {playlists?.find((item) => item._id == serverPlaylist)?.name}
                 </h1>
                 <Button
@@ -89,6 +106,7 @@ const Index = ({ serverPlaylist }) => {
                     <span>&nbsp; Track</span>
                   </>
                 </Button>
+                </Grid>
               </Grid>
             </Box>
             {/* <Playlists playlists={playlists} /> */}
@@ -98,9 +116,10 @@ const Index = ({ serverPlaylist }) => {
             >
               Added tracks:
             </h2> */}
+
             <TrackList
               tracks={playlistTracks}
-              playlist={playlist}
+              playlist={serverPlaylist}
               playlists={playlists}
             />
             <h2
@@ -110,7 +129,7 @@ const Index = ({ serverPlaylist }) => {
             </h2>
             <TrackList
               tracks={tracks}
-              playlist={playlist}
+              playlist={serverPlaylist}
               playlists={playlists}
             />
           </Card>
@@ -126,7 +145,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const dispatch = store?.dispatch as NextThunkDispatch;
     await dispatch(await fetchTracks(`s=${params?.id}`));
     await dispatch(await fetchPlaylistTracks(params?.id));
-    await dispatch(await setCurrentPlaylist(params?.id))
+    await dispatch(await setCurrentPlaylist(params?.id));
     await dispatch(await fetchPlaylists());
     return {
       props: {

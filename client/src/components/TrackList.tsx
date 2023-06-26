@@ -7,21 +7,23 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 interface TrackListProps {
   tracks: ITrack[];
   playlists: any;
-  playlist: number
+  playlist: number;
 }
 
-const TrackList: React.FC<TrackListProps> = ({ 
-  tracks, 
-  playlist, playlists }) => { 
+const TrackList: React.FC<TrackListProps> = ({
+  tracks,
+  playlist,
+  playlists,
+}) => {
   console.log("tracks: ", tracks);
   return (
-    <Grid container direction="column" sx={{backgroundColor: 'inherit'}}>
+    <Grid container direction="column" sx={{ backgroundColor: "inherit" }}>
       {/* <Box p={2}> */}
-        {tracks?.map((track) => (
-          <div key={track._id}>
-            <TrackItem track={track} playlist={playlist} playlists={playlists}/>
-          </div>
-        ))}
+      {tracks?.map((track) => (
+        <div key={track._id}>
+          <TrackItem track={track} playlist={playlist} playlists={playlists} />
+        </div>
+      ))}
       {/* </Box> */}
     </Grid>
   );

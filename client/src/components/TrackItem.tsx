@@ -20,6 +20,10 @@ import {
   PlaylistAdd,
   PlaylistRemove,
   Remove,
+  ThumbDownAlt,
+  ThumbDownOffAlt,
+  ThumbUpAlt,
+  ThumbUpOffAlt,
 } from "@mui/icons-material";
 import styles from "../styles/TrackItem.module.scss";
 import Image from "next/image";
@@ -50,36 +54,48 @@ const TrackItem: React.FC<TrackItemProps> = ({
   playlist,
   playlists,
 }) => {
-  const router = useRouter(); 
+  const router = useRouter();
 
   const { playTrack, pauseTrack, setActiveTrack } = useActions();
   const { active } = useTypedSelector((state) => state.player);
-
+  const { tracks, error: trackError } = useTypedSelector(
+    (state) => state.track
+  );
   const dispatch = useDispatch() as NextThunkDispatch;
 
   const play = (e) => {
     e.stopPropagation();
     setActiveTrack(track);
-    pauseTrack();  
+    pauseTrack();
   };
   const delTrack = async (e) => {
     e.stopPropagation();
     await dispatch(await deleteTrack(track._id));
     // await dispatch(await fetchTracks());//only delete from store not reload from server
   };
-
+console.log('playlists',playlists)
   const [playlistChosen, setPlaylistChosen] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
   const addOrRemoveToPlaylist = async (e) => {
-    await dispatch(await editTrack(track._id, e.target.value));
+    e.stopPropagation();
+    await dispatch(
+      await editTrack(
+        track._id,
+        e.target.value || playlists?.find((item) => item.name === "Liked")?._id
+      )
+    );
+    console.log("e.target.value: ", e.target.value);
+    console.log("track._id: ", track._id);
+    console.log("playlistaaa: ", playlist);
+
     router.pathname !== "/tracks"
-      ? await dispatch(await fetchTracks(`s=${playlist}`))
+      ? await dispatch(await fetchTracks(`s=${playlist}`))     
       : await dispatch(await fetchTracks());
     await dispatch(await fetchPlaylistTracks(playlist));
   };
 
-  useEffect(() => {}, [open]);
+
 
   const handleChange = (e) => {
     e.stopPropagation();
@@ -98,7 +114,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
     e.stopPropagation();
     setOpen(false);
   };
-
+console.log("track.playlists",track.playlists)
   return (
     <ListItem
       selected={active?._id === track._id ? true : false}
@@ -133,6 +149,13 @@ const TrackItem: React.FC<TrackItemProps> = ({
           {track.artist}
         </div>
       </Grid>
+      <IconButton onClick={addOrRemoveToPlaylist}>
+      {track?.playlists?.find(item=>item==='65607b03d37e11026be70623')?<ThumbUpAlt />:<ThumbUpOffAlt />}
+      </IconButton>
+
+      <IconButton onClick={addOrRemoveToPlaylist}>
+        {/* <ThumbDownOffAlt /><ThumbDownAlt /> */}
+      </IconButton>
       <div style={{ width: "100px", marginLeft: "auto" }}>
         <Tooltip title="Add / Remove from Playlists">
           <IconButton onClick={handleOpen} style={{ marginLeft: "auto" }}>
@@ -198,10 +221,10 @@ const TrackItem: React.FC<TrackItemProps> = ({
 
 export default TrackItem;
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ store }) => {
-    const dispatch = store?.dispatch as NextThunkDispatch;
+// export const getServerSideProps = wrapper.getServerSideProps(
+//   async ({ store }) => {
+//     const dispatch = store?.dispatch as NextThunkDispatch;
 
-    await dispatch(await setActiveTrack(track));
-  }
-);
+//     await dispatch(await setActiveTrack(track));
+//   }
+// );

@@ -5,6 +5,7 @@ import {
   SkipPrevious,
   ThumbDownAlt,
   ThumbUpAlt,
+  ThumbUpOffAlt,
   VolumeUp,
 } from "@mui/icons-material";
 import { Box, Grid, IconButton } from "@mui/material";
@@ -15,10 +16,16 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useActions } from "@/hooks/useActions";
 import { setVolume } from "@/store/actions-creators/player";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
+import { NextThunkDispatch } from "@/store";
+import { editTrack, fetchTracks } from "@/store/actions-creators/track";
+import { useRouter } from "next/router";
+import { fetchPlaylistTracks } from "@/store/actions-creators/playlist";
 
 let audio; //in browser
 
-const Player = () => {
+const Player = ({ store }) => {
+  
   const { pause, volume, duration, active, currentPlaylist, currentTime } =
     useTypedSelector((state) => state.player);
   const { tracks: playlistTracks, error: playlistTrackError } =
@@ -27,7 +34,9 @@ const Player = () => {
     (state) => state.track
   );
 
-  // знайти у масиві трек що поряд зробити активним
+  const router = useRouter();
+  const dispatch = useDispatch() as NextThunkDispatch;
+
   const {
     pauseTrack,
     playTrack,
@@ -52,36 +61,48 @@ const Player = () => {
     : tracks;
 
   const playPrev = () => {
-    let currentIndex = tracklist.findIndex((track) => track._id === active._id);
+    let currentIndex = setActiveTrack;
     let prevTrackIndex =
       currentIndex > 0 ? currentIndex - 1 : tracklist.length - 1;
     let prevTrack = tracklist[prevTrackIndex];
     setActiveTrack(prevTrack);
     pauseTrack();
-    // if (!pause) {
-    //   playTrack();
-    //   audio.play();
-    // } else {
-    //   pauseTrack();
-    //   audio.pause();
-    // }
   };
 
   const playNext = () => {
-    let currentIndex = tracklist.findIndex((track) => track._id === active._id);
+    let currentIndex = tracklist.findIndex(
+      (track) => track._id === active?._id
+    );
     let nextTrackIndex =
       currentIndex < tracklist.length - 1 ? currentIndex + 1 : 0;
     let nextTrack = tracklist[nextTrackIndex];
     setActiveTrack(nextTrack);
     pauseTrack();
-    // if (!pause) {
-    //   playTrack();
-    //   // audio.play();
-    // } else {
-    //   pauseTrack();
-    //   // audio.pause();
-    // }
   };
+
+  const addOrRemoveToPlaylist = async (e) => {
+    e.stopPropagation();
+    await dispatch(await editTrack(active?._id, "65607b03d37e11026be70623"));
+
+    // Fetch the updated tracklist
+    router.pathname !== "/tracks"
+      ? await dispatch(await fetchTracks(`s=${tracklist?._id}`))
+      : await dispatch(await fetchTracks());
+    await dispatch(await fetchPlaylistTracks(tracklist?._id));  
+  };
+
+  useEffect(() => {
+    // Update the active track
+    const tracklist = playlistTracks?.find((track) => track._id === active?._id)
+      ? playlistTracks
+      : tracks;
+    const updatedTrack = tracklist?.find(
+      // tracklist
+      (track) => track._id === active?._id
+    );
+    console.log("updatedTrack: ", updatedTrack);
+    updatedTrack && setActiveTrack(updatedTrack);
+  }, [tracks, playlistTracks]);
 
   console.log("currentPlaylist: ", currentPlaylist);
 
@@ -90,11 +111,6 @@ const Player = () => {
       audio = new Audio();
     } else {
       setAudio();
-
-      // play(); //if you want not to play immediately
-
-      // playTrack();// play
-      // audio.play();
     }
   }, [active]);
 
@@ -135,7 +151,9 @@ const Player = () => {
 
       <div className={styles.player}>
         <Grid container-fluid>
-          <IconButton onClick={playPrev}>{<SkipPrevious />}</IconButton>
+          <IconButton onClick={playPrev}>
+            <SkipPrevious />
+          </IconButton>
           <IconButton onClick={play}>
             {!pause ? (
               <Pause sx={{ fontSize: "40px" }} />
@@ -143,9 +161,11 @@ const Player = () => {
               <PlayArrow sx={{ fontSize: "40px" }} />
             )}
           </IconButton>
-          <IconButton onClick={playNext}>{<SkipNext />}</IconButton>
+          <IconButton onClick={playNext}>
+            <SkipNext />
+          </IconButton>
         </Grid>
-        <Box sx={{ display: "flex"}}>
+        <Box sx={{ display: "flex" }}>
           {active?.picture && (
             <Image
               style={{ marginTop: "20px" }}
@@ -163,18 +183,24 @@ const Player = () => {
               margin: "20px",
             }}
           >
-            <div style={{fontWeight:"600"}}>{active?.name}</div>
+            <div style={{ fontWeight: "600" }}>{active?.name}</div>
             <div style={{ fontSize: "12px", color: "gray" }}>
               {active?.artist}
             </div>
           </Grid>
-          <IconButton onClick={play}>  
-          <ThumbUpAlt/>          
+          <IconButton onClick={addOrRemoveToPlaylist}>
+            {active?.playlists?.find(
+              (item) => item == "65607b03d37e11026be70623"
+            ) ? (
+              <ThumbUpAlt />
+            ) : (
+              <ThumbUpOffAlt />
+            )}
           </IconButton>
-          
-          <IconButton onClick={play}> 
-          <ThumbDownAlt/>           
-          </IconButton>
+
+          {/* <IconButton onClick={play}>
+            <ThumbDownAlt />
+          </IconButton> */}
         </Box>
         <div style={{ display: "flex", alignItems: "center" }}>
           <VolumeUp style={{ marginLeft: "auto" }} />
