@@ -12,12 +12,23 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { useRouter } from "next/router";
-import { Button, Collapse, Container, TextField } from "@mui/material";
+import {
+  Button,
+  Collapse,
+  Container,
+  FormControl,
+  MenuItem,
+  Select,
+  Switch,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 
 import {
   AddSharp,
@@ -32,6 +43,14 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useInput } from "@/hooks/useInpute";
 import axios from "axios";
 import Search from "./Search";
+import { NextThunkDispatch } from "@/store";
+import { useDispatch } from "react-redux";
+import { setChangeTheme } from "@/store/actions-creators/player";
+// import { useTheme } from "next-themes";
+import { useStore } from "react-redux";
+import Cookie from "js-cookie";
+import { parseCookies } from "../helpers/parseCookies";
+import { StyledButton } from "./styled/StyledButton";
 
 const drawerWidth = 240;
 
@@ -85,15 +104,20 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function Navbar({children}) {
-  console.log("children: ", children);
+export default function Navbar({ children }) {
   const theme = useTheme();
+
   const [open, setOpen] = React.useState(true);
   const [visible, set$visible] = React.useState(false);
   const [show, set$show] = React.useState(true);
-  const [clicked, set$clicked] = React.useState("");
+  // const [checked, setChecked] = React.useState(true);
+  const [openTheme, setOpenTheme] = React.useState(false);
+  // const [themeChosen, setThemeChosen] = React.useState(null);
+
   const name = useInput("");
   const router = useRouter();
+
+  const dispatch = useDispatch() as NextThunkDispatch;
 
   const menuItems = [
     { text: "Main", href: "/" },
@@ -125,6 +149,34 @@ export default function Navbar({children}) {
       .catch((error) => console.log("Error", error));
   };
 
+  // const { changeTheme } = useTypedSelector((state) => state.player);
+
+  const handleTheme = (e) => {
+    // setChecked(e.target.checked);
+    // localStorage.setItem("theme", theme);
+
+    dispatch(setChangeTheme(e.target.value));
+    Cookie.set("rememberMe", e.target.value);
+  };
+  const handleChange = (e) => {
+    // setThemeChosen(e.target.value);
+    handleTheme(e);
+    // setThemeChosen(null);
+    handleClose;
+  };
+
+  const handleOpen = (e) => {
+    // e.stopPropagation(e);
+    setOpenTheme(true);
+  };
+
+  const handleClose = (e) => {
+    // e.stopPropagation();
+    setOpenTheme(false);
+  };
+
+  // React.useEffect(() => {console.log(changeTheme)},[themeChosen]);
+console.log('theme3',theme.palette.mode)
   if (playlistError) {
     return <h1>{playlistError}</h1>;
   }
@@ -132,15 +184,17 @@ export default function Navbar({children}) {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar>
+        <Toolbar sx={{ justifyContent: "space-between" }}>
           <IconButton
-            color="inherit"
+            // color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
             sx={{ mr: 2, ...(open && { display: "none" }) }}
           >
-            <MenuIcon style={{ color: "white" }} />
+            <MenuIcon
+            //  style={{ color: "white" }}
+            />
           </IconButton>
           <Typography
             variant="h6"
@@ -158,6 +212,41 @@ export default function Navbar({children}) {
             </span>
           </Typography>
           {playlists?.length > 0 && <Search />}
+          {/* <Tooltip title="Dark / Light"> */}
+          {/* <Switch
+              checked={checked}
+              onChange={handleTheme}
+              inputProps={{ "aria-label": "controlled" }}
+            /> */}
+          <Tooltip title="Dark / Light">
+            <IconButton onClick={handleOpen} style={{ marginLeft: "auto" }}>
+              <DarkModeIcon />
+            </IconButton>
+          </Tooltip>
+          {openTheme && (
+            <FormControl>
+              <Select
+                sx={{
+                  ".MuiOutlinedInput-notchedOutline": { borderStyle: "none" },
+                  position: "absolute",
+                }}
+                open={openTheme}
+                onClose={handleClose}
+                onOpen={handleOpen}
+                // value={themeChosen}
+                onChange={handleChange}
+                inputProps={{ IconComponent: () => null }}
+              >
+                <MenuItem key={"light"} value={"light"}>
+                  light
+                </MenuItem>
+                <MenuItem key={"dark"} value={"dark"}>
+                  dark
+                </MenuItem>
+              </Select>
+            </FormControl>
+          )}
+          {/* </Tooltip> */}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -198,9 +287,13 @@ export default function Navbar({children}) {
 
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
-              <ChevronLeftIcon style={{ color: "white" }} />
+              <ChevronLeftIcon
+              // style={{ color: "white" }}
+              />
             ) : (
-              <ChevronRightIcon style={{ color: "white" }} />
+              <ChevronRightIcon
+              // style={{ color: "white" }}
+              />
             )}
           </IconButton>
         </DrawerHeader>
@@ -209,14 +302,26 @@ export default function Navbar({children}) {
         />
         <List>
           {menuItems?.map(({ text, href }, index) => (
-            <ListItem selected={router.pathname===href} key={text} disablePadding>
-              <ListItemButton            
-              key={href} onClick={() => {router.push(href);}}>
+            <ListItem
+              selected={router.pathname === href}
+              key={text}
+              disablePadding
+            >
+              <ListItemButton
+                key={href}
+                onClick={() => {
+                  router.push(href);
+                }}
+              >
                 <ListItemIcon>
                   {index % 2 === 0 ? (
-                    <Radio style={{ color: "white" }} />
+                    <Radio
+                    // style={{ color: "white" }}
+                    />
                   ) : (
-                    <QueueMusic style={{ color: "white" }} />
+                    <QueueMusic
+                    // style={{ color: "white" }}
+                    />
                   )}
                 </ListItemIcon>
                 <ListItemText primary={text} />
@@ -226,7 +331,7 @@ export default function Navbar({children}) {
           <Divider
           // sx={{borderColor:'rgba(255, 255, 255, 0.1)'}}
           />
-          {playlists.length && (
+          {playlists.length ? (
             <div style={{ marginLeft: 20 }}>
               <ListItem disablePadding>
                 <ListItemButton
@@ -234,13 +339,19 @@ export default function Navbar({children}) {
                   style={{ justifyContent: "space-between" }}
                 >
                   <ListItemIcon>
-                    <PlaylistAddCheck style={{ color: "white" }} />
+                    <PlaylistAddCheck
+                    // style={{ color: "white" }}
+                    />
                   </ListItemIcon>
                   <ListItemText primary={"Playlists"} />
                   {show ? (
-                    <ExpandLess style={{ color: "white" }} />
+                    <ExpandLess
+                    // style={{ color: "white" }}
+                    />
                   ) : (
-                    <ExpandMore style={{ color: "white" }} />
+                    <ExpandMore
+                    // style={{ color: "white" }}
+                    />
                   )}
                 </ListItemButton>
               </ListItem>
@@ -266,58 +377,39 @@ export default function Navbar({children}) {
                     marginTop: 15,
                   }}
                 >
-                  <Button
+                  <StyledButton
+                    currentTheme={theme.palette.mode}
                     disabled={visible && name.value.length < 3}
-                    sx={{
-                      height: "auto",
-                      width: !visible ? "95%" : "auto",
-                      color: "white",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      borderRadius: 15,
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 255, 255, 0.05)",
-                      },
-                    }}
-                    // variant="outlined"
+                    width={!visible ? "95%" : "auto"}
                     onClick={!visible ? handleVisible : addPlaylist}
+                    padding={!visible ? "25px" : "15px"}
                   >
-                    <>
-                      <span style={{ marginTop: 7 }}>
-                        <AddSharp />
-                      </span>
-                      {!visible ? (
-                        <span>&nbsp; Playlist</span>
-                      ) : (
-                        <span>&nbsp; Add</span>
-                      )}
-                    </>
-                  </Button>
+                    {!visible ? (
+                      <>
+                        <span style={{ marginTop: 7 }}>
+                          <AddSharp />
+                        </span>
+                        <span>&nbsp; New Playlist</span>
+                      </>
+                    ) : (
+                      <span>&nbsp;+ Add&nbsp;&nbsp;</span>
+                    )}
+                  </StyledButton>
                   {visible && (
-                    <Button
-                      sx={{
-                        marginLeft: "2px",
-                        height: "auto",
-                        color: "white",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        paddingTop: 0,
-                        paddingBottom: 0,
-                        borderRadius: 15,
-                        "&:hover": {
-                          backgroundColor: "rgba(255, 255, 255, 0.05)",
-                        },
-                      }}
+                    <StyledButton
+                      currentTheme={theme.palette.mode}
+                      padding={"15px"}
+                      margin={"2px"}
                       onClick={handleVisible}
                     >
-                      X CLOSE
-                    </Button>
+                      <span>&nbsp; x Close&nbsp;</span>
+                    </StyledButton>
                   )}
                 </div>
                 <Playlists playlists={playlists} />
               </Collapse>
             </div>
-          )}
+          ) : null}
         </List>
       </Drawer>
       <Main open={open}>

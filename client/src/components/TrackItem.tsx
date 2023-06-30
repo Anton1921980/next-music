@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { ITrack } from "../types/track";
 import {
-  Box,
   Grid,
-  Card,
   IconButton,
   FormControl,
   Select,
   MenuItem,
   Tooltip,
   ListItem,
+  Divider,
+  ListSubheader,
 } from "@mui/material";
 import {
   Add,
-  Book,
   Delete,
   Pause,
   PlayArrow,
   PlaylistAdd,
   PlaylistRemove,
   Remove,
-  ThumbDownAlt,
-  ThumbDownOffAlt,
   ThumbUpAlt,
   ThumbUpOffAlt,
 } from "@mui/icons-material";
@@ -29,17 +26,16 @@ import styles from "../styles/TrackItem.module.scss";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useActions } from "@/hooks/useActions";
-import axios from "axios";
-import {
-  deleteTrack,
-  editTrack,
-  fetchTracks,
-} from "@/store/actions-creators/track";
 import { useDispatch } from "react-redux";
 import { NextThunkDispatch, wrapper } from "@/store";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { fetchPlaylistTracks } from "@/store/actions-creators/playlist";
-import { setActiveTrack } from "@/store/actions-creators/player";
+
+import {
+  addOrRemoveToPlaylist,
+  delTrack,
+  handleChange,
+  play,
+} from "@/helpers/trackFunctions";
 
 interface TrackItemProps {
   track: ITrack;
@@ -55,176 +51,217 @@ const TrackItem: React.FC<TrackItemProps> = ({
   playlists,
 }) => {
   const router = useRouter();
-
   const { playTrack, pauseTrack, setActiveTrack } = useActions();
   const { active } = useTypedSelector((state) => state.player);
-  const { tracks, error: trackError } = useTypedSelector(
-    (state) => state.track
-  );
+
+  const [playlistChosen, setPlaylistChosen] = React.useState("");
+  const [openAdd, set$openAdd] = React.useState(false);
+  const [openRemove, set$openRemove] = React.useState(false);
+
   const dispatch = useDispatch() as NextThunkDispatch;
 
-  const play = (e) => {
-    e.stopPropagation();
-    setActiveTrack(track);
-    pauseTrack();
+  const handlePlay = (e) => {
+    play(e, setActiveTrack, pauseTrack, track);
   };
-  const delTrack = async (e) => {
-    e.stopPropagation();
-    await dispatch(await deleteTrack(track._id));
-    // await dispatch(await fetchTracks());//only delete from store not reload from server
-  };
-console.log('playlists',playlists)
-  const [playlistChosen, setPlaylistChosen] = React.useState("");
-  const [open, setOpen] = React.useState(false);
 
-  const addOrRemoveToPlaylist = async (e) => {
-    e.stopPropagation();
-    await dispatch(
-      await editTrack(
-        track._id,
-        e.target.value || playlists?.find((item) => item.name === "Liked")?._id
-      )
+  const handleDeleteTrack = async (e) => {
+    await delTrack(e, dispatch, track);
+  };
+
+  const handleAddOrRemoveToPlaylist = async (e) => {
+    await addOrRemoveToPlaylist(
+      e,
+      dispatch,
+      track,
+      playlist,
+      playlists,
+      router
     );
-    console.log("e.target.value: ", e.target.value);
-    console.log("track._id: ", track._id);
-    console.log("playlistaaa: ", playlist);
-
-    router.pathname !== "/tracks"
-      ? await dispatch(await fetchTracks(`s=${playlist}`))     
-      : await dispatch(await fetchTracks());
-    await dispatch(await fetchPlaylistTracks(playlist));
   };
 
-
-
-  const handleChange = (e) => {
-    e.stopPropagation();
-    setPlaylistChosen(e.target.value);
-    addOrRemoveToPlaylist(e);
-    setPlaylistChosen("");
-    handleClose;
+  const handleInputChange = (e) => {
+    handleChange(
+      e,
+      setPlaylistChosen,
+      handleAddOrRemoveToPlaylist,
+      handleClose
+    );
   };
 
   const handleOpen = (e) => {
-    e.stopPropagation(e);
-    setOpen(true);
+    e.stopPropagation();
+    e.currentTarget.value === "add" ? set$openAdd(true) : set$openRemove(true);
+    console.log(" e.target.value: ", e);
   };
 
   const handleClose = (e) => {
     e.stopPropagation();
-    setOpen(false);
+    openAdd ? set$openAdd(false) : set$openRemove(false);
   };
-console.log("track.playlists",track.playlists)
-  return (
-    <ListItem
-      selected={active?._id === track._id ? true : false}
-      sx={{
-        backgroundImage:
-          "linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))",
-      }}
-      className={styles.track}
-      onClick={() => router.push("/tracks/" + track._id)}
-    >
-      <IconButton onClick={play}>
-        {active?._id === track._id ? <Pause /> : <PlayArrow />}
-      </IconButton>
-      {track?.picture && (
-        <Image
-          width={50}
-          height={50}
-          src={"http://localhost:5000/" + track.picture}
-          alt=""
-        />
-      )}
-      <Grid container direction="column" style={{ width: 200, margin: "10px" }}>
-        <div>{track.name}</div>
-        <div
-          style={{
-            fontSize: "12px",
-            fontWeight: "600",
-            color: "gray",
-            textTransform: "uppercase",
-          }}
-        >
-          {track.artist}
-        </div>
-      </Grid>
-      <IconButton onClick={addOrRemoveToPlaylist}>
-      {track?.playlists?.find(item=>item==='65607b03d37e11026be70623')?<ThumbUpAlt />:<ThumbUpOffAlt />}
-      </IconButton>
 
-      <IconButton onClick={addOrRemoveToPlaylist}>
-        {/* <ThumbDownOffAlt /><ThumbDownAlt /> */}
-      </IconButton>
-      <div style={{ width: "100px", marginLeft: "auto" }}>
-        <Tooltip title="Add / Remove from Playlists">
-          <IconButton onClick={handleOpen} style={{ marginLeft: "auto" }}>
-            <PlaylistAdd />
-          </IconButton>
-        </Tooltip>
-        {open && (
-          <FormControl>
-            <Select
-              sx={{
-                ".MuiOutlinedInput-notchedOutline": { borderStyle: "none" },
-              }}
-              open={open}
-              onClose={handleClose}
-              onOpen={handleOpen}
-              value={playlistChosen}
-              onChange={handleChange}
-              inputProps={{ IconComponent: () => null }}
-            >
-              {playlists
-                ?.filter((item) => !track.playlists.includes(item._id))
-                .map((item) => (
-                  <MenuItem key={item._id} value={item._id}>
-                    <Add />
-                    {item.name}
-                  </MenuItem>
-                ))}
-              {playlists
-                ?.filter((item) => track.playlists.includes(item._id))
-                .map((item) => (
-                  <MenuItem key={item._id} value={item._id}>
-                    <Remove /> {item.name}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        )}
-      </div>
-      {/* {!track?.playlists?.find(item=>item==playlist) ? (
-          <IconButton
-            onClick={addOrRemoveToPlaylist}
-            style={{ marginLeft: "auto" }}
-          >
-            <PlaylistAdd />
-          </IconButton>
-        ) : (
-          <IconButton
-            onClick={addOrRemoveToPlaylist}
-            style={{ marginLeft: "auto" }}
-          >
-            <PlaylistRemove />
-          </IconButton>
-        )}
-      </div> */}
-      <Tooltip title="Delete from Server">
-        <IconButton onClick={delTrack} style={{ marginLeft: "auto" }}>
-          <Delete />
+  return (
+    <>
+      <ListItem
+        selected={active?._id === track._id ? true : false}
+        sx={{
+          backgroundImage:
+            "linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0))",
+          lineHeight: "1",
+          height: "50px",
+        }}
+        className={styles.track}
+        onClick={() => router.push("/tracks/" + track._id)}
+      >
+        <IconButton onClick={handlePlay}>
+          {active?._id === track._id ? <Pause /> : <PlayArrow />}
         </IconButton>
-      </Tooltip>
-    </ListItem>
+        {track?.picture && (
+          <Image
+            width={40}
+            height={40}
+            src={"http://localhost:5000/" + track.picture}
+            alt=""
+          />
+        )}
+        <Grid
+          container
+          direction="row"
+          style={{ width: "500px", margin: "30px" }}
+        >
+          <div style={{ width: "300px" }}>{track.name}</div>
+          <div
+            style={{
+              width: "200px",
+              fontSize: "12px",
+              fontWeight: "600",
+              color: "gray",
+              textTransform: "uppercase",
+            }}
+          >
+            {track.artist}
+          </div>
+        </Grid>
+
+        <div style={{ width: "180px", marginLeft: "auto" }}>
+          <IconButton onClick={handleInputChange}>
+            {track?.playlists?.find(
+              (item) => item === "65607b03d37e11026be70623"
+            ) ? (
+              <ThumbUpAlt />
+            ) : (
+              <ThumbUpOffAlt />
+            )}
+          </IconButton>
+          <Tooltip title="Add to Playlists">
+            <IconButton
+              onClick={handleOpen}
+              style={{ marginLeft: "auto" }}
+              value="add"
+            >
+              <PlaylistAdd />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title=" Remove from Playlists">
+            <IconButton
+              onClick={handleOpen}
+              style={{ marginLeft: "auto" }}
+              value="remove"
+            >
+              <PlaylistRemove />
+            </IconButton>
+          </Tooltip>
+          {openAdd && (
+            <FormControl>
+              <Select
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      overflowY: "scroll",
+                      maxHeight: "200px",
+                      scrollbarWidth: "thin",
+                    },
+                  },
+                }}
+                sx={{
+                  position: "absolute",
+                  width: "220px",
+                  right: "0px",
+                  ".MuiOutlinedInput-notchedOutline": { borderStyle: "none" },
+                }}
+                open={openAdd}
+                onClose={handleClose}
+                onOpen={handleOpen}
+                value={playlistChosen}
+                onChange={handleInputChange}
+                inputProps={{ IconComponent: () => null }}
+              >
+                <ListSubheader sx={{ fontSize: "14px" }}>
+                  add to Playlist:
+                </ListSubheader>
+                {playlists
+                  ?.filter((item) => !track.playlists.includes(item._id))
+                  .map((item) => (
+                    <MenuItem key={item._id} value={item._id}>
+                      <Add />
+                      {item.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          )}
+
+          {openRemove && (
+            <FormControl>
+              <Select
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      overflowY: "scroll",
+                      maxHeight: "200px",
+                      scrollbarWidth: "thin",
+                    },
+                  },
+                }}
+                sx={{
+                  position: "absolute",
+                  right: "0px",
+                  width: "220px",
+                  ".MuiOutlinedInput-notchedOutline": { borderStyle: "none" },
+                }}
+                open={openRemove}
+                onClose={handleClose}
+                onOpen={handleOpen}
+                value={playlistChosen}
+                onChange={handleInputChange}
+                inputProps={{ IconComponent: () => null }}
+              >
+                <ListSubheader sx={{ fontSize: "14px" }}>
+                  remove from Playlist:
+                </ListSubheader>
+                {playlists
+                  ?.filter((item) => track.playlists.includes(item._id))
+                  .map((item) => (
+                    <MenuItem key={item._id} value={item._id}>
+                      <Remove /> {item.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          )}
+
+          <Tooltip title="Delete from Server">
+            <IconButton
+              onClick={handleDeleteTrack}
+              style={{ marginLeft: "auto" }}
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </ListItem>
+      <Divider />
+    </>
   );
 };
 
 export default TrackItem;
-
-// export const getServerSideProps = wrapper.getServerSideProps(
-//   async ({ store }) => {
-//     const dispatch = store?.dispatch as NextThunkDispatch;
-
-//     await dispatch(await setActiveTrack(track));
-//   }
-// );

@@ -2,13 +2,15 @@ import FileUploader from "@/components/FileUploader";
 import StepWrapper from "@/components/StepWrapper";
 import { useInput } from "@/hooks/useInpute";
 import MainLayout from "@/layouts/MainLayout";
+import { wrapper } from "@/store";
 import { Box, Button, Card, Grid, TextField } from "@mui/material";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import nextCookies from "next-cookies";
 
-const Create = () => {
+const Create = ({initialRememberValue}) => {
   const [activeStep, set$activeStep] = useState(0);
   const [picture, set$picture] = useState(null);
   const [audioName, set$audioName] = useState(null);
@@ -44,7 +46,7 @@ const Create = () => {
   };
   return (
     <>
-      <MainLayout>
+      <MainLayout  initialRememberValue={initialRememberValue}>
         <StepWrapper activeStep={activeStep}>
           {activeStep === 0 && (
             <Grid container direction={"column"} style={{ padding: 20 }}>
@@ -116,4 +118,19 @@ const Create = () => {
     </>
   );
 };
+
 export default Create;
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async ({ req }) => {
+
+    const cookies = nextCookies({ req });
+    const initialRememberValue = cookies.rememberMe || null;
+
+    return {
+      props: {
+        initialRememberValue,
+      },
+    };
+  }
+);

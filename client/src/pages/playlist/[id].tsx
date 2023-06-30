@@ -14,15 +14,17 @@ import {
 } from "@/store/actions-creators/playlist";
 import Playlists from "@/components/Playlists";
 import { AddSharp } from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
 import { setCurrentPlaylist } from "@/store/actions-creators/player";
 import Image from "next/image";
+import nextCookies from "next-cookies";
+import { StyledButton } from "@/components/styled/StyledButton";
 
-const Index = ({ serverPlaylist }) => {
-
+const Index = ({ serverPlaylist, initialRememberValue }) => {
   console.log("serverPlaylist: ", serverPlaylist);
-  
-  const router = useRouter();
 
+  const router = useRouter();
+  const { changeTheme } = useTypedSelector((state) => state.player);
   const { tracks, error: trackError } = useTypedSelector(
     (state) => state.track
   );
@@ -31,6 +33,8 @@ const Index = ({ serverPlaylist }) => {
   );
   const { tracks: playlistTracks, error: playlistTrackError } =
     useTypedSelector((state) => state.playlistTrack);
+
+  const currentTheme = changeTheme || initialRememberValue;
 
   if (trackError || playlistError || playlistTrackError) {
     return (
@@ -42,7 +46,10 @@ const Index = ({ serverPlaylist }) => {
 
   return (
     <>
-      <MainLayout title={"track list from music tracks hosting"}>
+      <MainLayout
+        title={"track list from music tracks hosting"}
+        initialRememberValue={initialRememberValue}
+      >
         <Grid
           container-fluid
           justifyContent="center"
@@ -77,35 +84,58 @@ const Index = ({ serverPlaylist }) => {
                     </Grid>
                   ))}
                 </Grid>
-                <Grid container sx={{ flexDirection: 'column' , marginLeft:'50px' , width: '200px'}}>
-                <h1>
-                  {/* Playlist:{" "} */}
-                  {playlists?.find((item) => item._id == serverPlaylist)?.name}
-                </h1>
-                <Button
+                <Grid
+                  container
                   sx={{
-                    height: "auto",
-                    color: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                    borderRadius: 15,
-                    paddingLeft: 5,
-                    paddingRight: 5,
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    },
+                    flexDirection: "column",
+                    marginLeft: "50px",
+                    width: "400px",
                   }}
-                  // variant="outlined"
-                  onClick={() => router.push("/tracks/create")}
                 >
-                  <>
-                    <span style={{ marginTop: 7 }}>
-                      <AddSharp />
-                    </span>
-                    <span>&nbsp; Track</span>
-                  </>
-                </Button>
+                  <h1>
+                    {/* Playlist:{" "} */}
+                    {
+                      playlists?.find((item) => item._id == serverPlaylist)
+                        ?.name
+                    }
+                  </h1>
+                  <Grid container>
+                    <StyledButton
+                      currentTheme={currentTheme}
+                      onClick={() => router.push("/tracks/create")}
+                    >
+                      <>
+                        <span style={{ marginTop: 7 }}>
+                          <AddSharp />
+                        </span>
+                        <span>&nbsp; New Track</span>
+                      </>
+                    </StyledButton>
+                    <StyledButton
+                      currentTheme={currentTheme}
+                      backgroundColor={
+                        currentTheme === "dark"
+                          ? "rgba(255, 255, 255, 0.0)"
+                          : "rgba(255, 255, 255, 0.1)"
+                      }
+                      variant="outlined"
+                      borderColor={
+                        currentTheme === "dark"
+                          ? "rgba(255, 255, 255, 0.2)"
+                          : "rgba(0, 0, 0, 0.2)"
+                      }
+                      onClick={() => router.push("/tracks/create")}
+                    >
+                      <>
+                        <span style={{ marginTop: 7 }}>
+                          <EditIcon
+                            sx={{ fontSize: "medium", marginBottom: "2px" }}
+                          />
+                        </span>
+                        <span>&nbsp; Edit Playlist</span>
+                      </>
+                    </StyledButton>
+                  </Grid>
                 </Grid>
               </Grid>
             </Box>
@@ -138,18 +168,26 @@ const Index = ({ serverPlaylist }) => {
     </>
   );
 };
+
+// Index.getInitialProps = MainLayout.getInitialProps;
+
 export default Index;
 
 export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ store, params }) => {
+  async ({ store, params, req }) => {
     const dispatch = store?.dispatch as NextThunkDispatch;
     await dispatch(await fetchTracks(`s=${params?.id}`));
     await dispatch(await fetchPlaylistTracks(params?.id));
     await dispatch(await setCurrentPlaylist(params?.id));
     await dispatch(await fetchPlaylists());
+
+    const cookies = nextCookies({ req });
+    const initialRememberValue = cookies.rememberMe || null;
+
     return {
       props: {
         serverPlaylist: params?.id,
+        initialRememberValue,
       },
     };
   }

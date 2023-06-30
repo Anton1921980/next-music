@@ -1,27 +1,43 @@
+import React from "react";
 import Navbar from "@/components/Navbar";
 import Player from "@/components/Player";
-import { Container } from "@mui/material";
 import Head from "next/head";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { useState } from "react";
+import { GetServerSideProps } from "next";
+import nextCookies from "next-cookies";
 
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
+import { Global } from "@emotion/react";
+import { globalStyles } from "@/components/styled/Global";
 
 interface MainLayoutProps {
   title?: string;
   description?: string;
   keywords?: string;
   children?: any;
+  initialRememberValue?: any;
 }
 const MainLayout: React.FC<MainLayoutProps> = ({
   children,
   title,
   description,
   keywords,
+  initialRememberValue = "dark",
 }) => {
+  const { changeTheme, active } = useTypedSelector((state) => state.player);
+
+  const [rememberMe, setRememberMe] = useState(initialRememberValue);
+
+  const mode = changeTheme || rememberMe || "dark";
+  const theme = createTheme({
+    palette: {
+      mode: mode,
+    },
+  });
+  React.useEffect(() => {
+    console.log("Theme changed:", changeTheme, rememberMe);
+  }, [rememberMe, changeTheme]);
   return (
     <>
       <Head>
@@ -40,7 +56,42 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider
+        theme={createTheme({
+          ...theme,
+          // palette: { primary: { main: "#d1005e" } },
+          components: {
+            MuiToolbar: {
+              styleOverrides: {
+                root: {
+                  backgroundColor: mode === "light" ? "white" : undefined,
+                },
+              },
+            },
+            MuiMenuItem: {
+              styleOverrides: {
+                root: {
+                  "&.Mui-selected": {
+                    borderRadius: "8px",
+                    // "&.Mui-focusVisible": { background: "orange" }
+                  },
+                },
+              },
+            },
+
+            //     MuiPopover: {
+            //       styleOverrides: {
+            //           root: {
+            //               '&.MuiPopover-paper': {
+            //                   maxHeight: '86px' // Example maximum of two options displayed. About 43px per select option.
+            //               }
+            //           }
+            //   }
+            // },
+          },
+        })}
+      >
+        <Global styles={globalStyles} />
         <Navbar>{children}</Navbar>
         {/* <Container
         //  style={{ margin: "3rem 15rem" }}
@@ -50,4 +101,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     </>
   );
 };
+
 export default MainLayout;
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const cookies = nextCookies({ req });
+  const initialRememberValue = cookies.rememberMe || null;
+  return {
+    props: {
+      initialRememberValue,
+    },
+  };
+};
