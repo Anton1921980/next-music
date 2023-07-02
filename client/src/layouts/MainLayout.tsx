@@ -1,3 +1,4 @@
+
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Player from "@/components/Player";
@@ -10,6 +11,7 @@ import nextCookies from "next-cookies";
 
 import { Global } from "@emotion/react";
 import { globalStyles } from "@/components/styled/Global";
+import Providers from "@/components/Providers";
 
 interface MainLayoutProps {
   title?: string;
@@ -56,6 +58,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+     
       <ThemeProvider
         theme={createTheme({
           ...theme,
@@ -91,13 +94,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           },
         })}
       >
-        <Global styles={globalStyles} />
-        <Navbar>{children}</Navbar>
-        {/* <Container
+       
+          <Global styles={globalStyles} />
+          <Providers>
+          <Navbar>{children}</Navbar>
+          </Providers>
+          {/* <Container
         //  style={{ margin: "3rem 15rem" }}
          >{children}</Container> */}
-        <Player />
+          <Player />
+    
       </ThemeProvider>
+   
     </>
   );
 };

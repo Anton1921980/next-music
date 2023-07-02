@@ -49,8 +49,9 @@ import { setChangeTheme } from "@/store/actions-creators/player";
 // import { useTheme } from "next-themes";
 import { useStore } from "react-redux";
 import Cookie from "js-cookie";
-import { parseCookies } from "../helpers/parseCookies";
 import { StyledButton } from "./styled/StyledButton";
+import SigninButton from "./SigninButton";
+import Providers from "./Providers";
 
 const drawerWidth = 240;
 
@@ -176,7 +177,7 @@ export default function Navbar({ children }) {
   };
 
   // React.useEffect(() => {console.log(changeTheme)},[themeChosen]);
-console.log('theme3',theme.palette.mode)
+  console.log("theme3", theme.palette.mode);
   if (playlistError) {
     return <h1>{playlistError}</h1>;
   }
@@ -218,8 +219,17 @@ console.log('theme3',theme.palette.mode)
               onChange={handleTheme}
               inputProps={{ "aria-label": "controlled" }}
             /> */}
+
+          <SigninButton />
           <Tooltip title="Dark / Light">
-            <IconButton onClick={handleOpen} style={{ marginLeft: "auto" }}>
+            <IconButton
+              onClick={handleOpen}
+              style={
+                {
+                  // marginLeft: "auto"
+                }
+              }
+            >
               <DarkModeIcon />
             </IconButton>
           </Tooltip>
@@ -246,6 +256,7 @@ console.log('theme3',theme.palette.mode)
               </Select>
             </FormControl>
           )}
+
           {/* </Tooltip> */}
         </Toolbar>
       </AppBar>
@@ -414,6 +425,7 @@ console.log('theme3',theme.palette.mode)
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
+
         <Container>{children}</Container>
       </Main>
     </Box>

@@ -19,10 +19,13 @@ import { setCurrentPlaylist } from "@/store/actions-creators/player";
 import Image from "next/image";
 import nextCookies from "next-cookies";
 import { StyledButton } from "@/components/styled/StyledButton";
+import { useSession } from "next-auth/react";
 
-const Index = ({ serverPlaylist, initialRememberValue }) => {
+const Index = ({ serverPlaylist, initialRememberValue, user }) => {
+  console.log("user: ", user);
   console.log("serverPlaylist: ", serverPlaylist);
 
+  
   const router = useRouter();
   const { changeTheme } = useTypedSelector((state) => state.player);
   const { tracks, error: trackError } = useTypedSelector(
@@ -183,11 +186,13 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const cookies = nextCookies({ req });
     const initialRememberValue = cookies.rememberMe || null;
+    const user = cookies.user;
 
     return {
       props: {
         serverPlaylist: params?.id,
         initialRememberValue,
+        user
       },
     };
   }
