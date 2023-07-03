@@ -1,31 +1,31 @@
-import { useTheme } from "next-themes";
-import { GlobalStyles, createTheme } from "@mui/material";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+// import { useTheme } from "next-themes";
+// import { GlobalStyles, createTheme } from "@mui/material";
+// import { CssBaseline, ThemeProvider } from "@mui/material";
 
-import { FC, useEffect, useState } from "react";
-import { darkTheme, lightTheme } from "./createEmotionCasche";
+// import { FC, useEffect, useState } from "react";
+// import { darkTheme, lightTheme } from "./createEmotionCasche";
 
-const MUIThemeProvider: FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+// const MUIThemeProvider: FC<{ children: React.ReactNode }> = ({
+//   children,
+// }) => {
 
 
-  const { resolvedTheme } = useTheme();
-  const [currentTheme, setCurrentTheme] = useState(darkTheme);
+//   const { resolvedTheme } = useTheme();
+//   const [currentTheme, setCurrentTheme] = useState(darkTheme);
 
-  useEffect(() => {
-    resolvedTheme === "light"
-      ? setCurrentTheme(lightTheme)
-      : setCurrentTheme(darkTheme);
-  }, [resolvedTheme]);
+//   useEffect(() => {
+//     resolvedTheme === "light"
+//       ? setCurrentTheme(lightTheme)
+//       : setCurrentTheme(darkTheme);
+//   }, [resolvedTheme]);
 
-  return (
-    <ThemeProvider theme={currentTheme}>
-      <CssBaseline />
-      <GlobalStyles styles={globalStyles} />
-      {children}
-    </ThemeProvider>
-  );
-};
+//   return (
+//     <ThemeProvider theme={currentTheme}>
+//       <CssBaseline />
+//       <GlobalStyles styles={globalStyles} />
+//       {children}
+//     </ThemeProvider>
+//   );
+// };
 
-export default MUIThemeProvider;
+// export default MUIThemeProvider;
