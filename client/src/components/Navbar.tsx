@@ -52,6 +52,7 @@ import Cookie from "js-cookie";
 import { StyledButton } from "./styled/StyledButton";
 import SigninButton from "./SigninButton";
 import Providers from "./Providers";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 const drawerWidth = 240;
 
@@ -104,8 +105,11 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: "flex-end",
 }));
+interface NavbarProps {
+  children: React.ReactNode;
+}
 
-export default function Navbar({ children }) {
+export default function Navbar({ children }: NavbarProps) {
   const theme = useTheme();
 
   const [open, setOpen] = React.useState(true);
@@ -145,39 +149,35 @@ export default function Navbar({ children }) {
   const addPlaylist = () => {
     console.log("name: ", name.value);
     axios
-      .post(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/playlist`, { name: name.value })
+      .post(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/playlist`, {
+        name: name.value,
+      })
       .then((response) => router.push("/tracks").then(handleVisible))
       .catch((error) => console.log("Error", error));
   };
 
   // const { changeTheme } = useTypedSelector((state) => state.player);
 
-  const handleTheme = (e) => {
-    // setChecked(e.target.checked);
-    // localStorage.setItem("theme", theme);
-
-    dispatch(setChangeTheme(e.target.value));
-    Cookie.set("rememberMe", e.target.value);
+  const handleTheme = (e: SelectChangeEvent<string>) => {
+    const target = e.target as HTMLInputElement;
+    dispatch(setChangeTheme(target.value));
+    Cookie.set("rememberMe", target.value);
   };
-  const handleChange = (e) => {
-    // setThemeChosen(e.target.value);
+  const handleChange = (e: SelectChangeEvent<string>) => {
     handleTheme(e);
-    // setThemeChosen(null);
     handleClose;
   };
 
-  const handleOpen = (e) => {
+  const handleOpen = (e: React.SyntheticEvent) => {
     // e.stopPropagation(e);
     setOpenTheme(true);
   };
 
-  const handleClose = (e) => {
+  const handleClose = (e: React.SyntheticEvent) => {
     // e.stopPropagation();
     setOpenTheme(false);
   };
 
-  // React.useEffect(() => {console.log(changeTheme)},[themeChosen]);
-  console.log("theme3", theme.palette.mode);
   if (playlistError) {
     return <h1>{playlistError}</h1>;
   }
@@ -393,7 +393,9 @@ export default function Navbar({ children }) {
                     disabled={visible && name.value.length < 3}
                     width={!visible ? "95%" : "auto"}
                     onClick={!visible ? handleVisible : addPlaylist}
-                    padding={!visible ? "25px" : "15px"}
+                    padding={!visible ? "25px" : "15px"}          
+                   
+             
                   >
                     {!visible ? (
                       <>
@@ -410,8 +412,9 @@ export default function Navbar({ children }) {
                     <StyledButton
                       currentTheme={theme.palette.mode}
                       padding={"15px"}
-                      margin={"2px"}
+                      margin={"2px"}                  
                       onClick={handleVisible}
+                      disabled={false}
                     >
                       <span>&nbsp; x Close&nbsp;</span>
                     </StyledButton>

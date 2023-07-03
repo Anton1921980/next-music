@@ -1,11 +1,16 @@
-import React from "react";
+import React, { FC } from "react";
 import Button from "@mui/material/Button";
 import Navbar from "@/components/Navbar";
 import MainLayout from "@/layouts/MainLayout";
 import { wrapper } from "@/store";
 import nextCookies from "next-cookies";
 
-const Index = ({ initialRememberValue }) => {
+interface IndexProps {
+  initialRememberValue: string | null;
+}
+
+
+const Index: FC<IndexProps>  = ({ initialRememberValue }) => {
   return (
     <>
       <MainLayout initialRememberValue={initialRememberValue}>

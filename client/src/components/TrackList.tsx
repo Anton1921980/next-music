@@ -1,13 +1,12 @@
 import React from "react";
-import { ITrack } from "../types/track";
-import { Box, Button, Card, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import TrackItem from "./TrackItem";
-import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { ITrack } from "../../types/track";
 
 interface TrackListProps {
   tracks: ITrack[];
-  playlists: any;
-  playlist: number;
+  playlists?: any;
+  playlist?: number;
 }
 
 const TrackList: React.FC<TrackListProps> = ({
@@ -17,14 +16,12 @@ const TrackList: React.FC<TrackListProps> = ({
 }) => {
 
   return (
-    <Grid container direction="column" sx={{ backgroundColor: "inherit" }}>
-      {/* <Box p={2}> */}
+    <Grid container direction="column" sx={{ backgroundColor: "inherit" }}>     
       {tracks?.map((track) => (
         <div key={track._id}>
           <TrackItem track={track} playlist={playlist} playlists={playlists} />
         </div>
-      ))}
-      {/* </Box> */}
+      ))}   
     </Grid>
   );
 };

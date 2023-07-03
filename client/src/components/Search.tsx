@@ -14,21 +14,24 @@ import SearchIcon from "@mui/icons-material/Search";
 
 export default function Search() {
   const [query, set$query] = React.useState<string>("");
-  const [timer, set$timer] = React.useState(null);
   const [focused, set$focused] = React.useState(true);
 
   const dispatch = useDispatch() as NextThunkDispatch;
 
+  let timer:any;
+
   const search = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
     set$query(e.target.value);
+
     if (timer) {
       clearTimeout(timer);
-    }
-    set$timer(
-      setTimeout(async () => {
+    }   
+
+    timer =  setTimeout(async () => {
         await dispatch(await searchTracks(e.target.value));
       }, 1000)
-    );
+    
   };
 
   const handleFocus = () => {

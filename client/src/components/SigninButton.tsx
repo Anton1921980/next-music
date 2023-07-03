@@ -10,7 +10,7 @@ import Cookie from "js-cookie";
 const SigninButton = () => {
   const { data: session } = useSession();
   console.log("session: ", session);
-  Cookie.set("user", session?.user?.email);
+  session?.user?.email && Cookie.set("user", session?.user?.email);
   
   if (session && session.user) {
     return (

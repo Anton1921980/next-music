@@ -12,7 +12,7 @@ export const playlistReducer = (state = initialState, action: PlaylistAction) =>
         case PlaylistActionTypes.FETCH_PLAYLISTS:
             return { error: '', playlists: action.payload }
         case PlaylistActionTypes.DELETE_PLAYLIST:
-            return { error: '', playlists: state.playlists.filter(playlist => playlist._id != action.payload) } 
+            return { error: '', playlists: state.playlists.filter(playlist => playlist._id !== action.payload.toString()) } 
         
         default:
             return state

@@ -13,7 +13,11 @@ export interface ITrack {
     picture: string;
     audio: string;
     comments: IComment[]
-    playlists: [];
+    playlists: string[];
+}
+export interface TrackState {
+    tracks: ITrack[];
+    error: string;
 }
 
 export enum TrackActionTypes {

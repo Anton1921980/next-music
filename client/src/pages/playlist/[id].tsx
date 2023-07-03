@@ -1,5 +1,5 @@
 import MainLayout from "@/layouts/MainLayout";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { Box, Button, Card, Grid, TextField } from "@mui/material";
 import { useRouter } from "next/router";
 import TrackList from "@/components/TrackList";
@@ -20,12 +20,21 @@ import Image from "next/image";
 import nextCookies from "next-cookies";
 import { StyledButton } from "@/components/styled/StyledButton";
 import { useSession } from "next-auth/react";
+import { ITrack } from "../../../types/track";
 
-const Index = ({ serverPlaylist, initialRememberValue, user }) => {
+interface IndexProps {
+  initialRememberValue: string | null;
+  serverPlaylist: any;
+  user: string | null;
+}
+const Index: FC<IndexProps> = ({
+  serverPlaylist,
+  initialRememberValue,
+  user,
+}) => {
   console.log("user: ", user);
   console.log("serverPlaylist: ", serverPlaylist);
 
-  
   const router = useRouter();
   const { changeTheme } = useTypedSelector((state) => state.player);
   const { tracks, error: trackError } = useTypedSelector(
@@ -69,23 +78,29 @@ const Index = ({ serverPlaylist, initialRememberValue, user }) => {
                 sx={{ display: "flex" }}
               >
                 <Grid container sx={{ width: "200px" }}>
-                  {playlistTracks.slice(0, 4)?.map((track, index) => (
-                    <Grid
-                      item
-                      xs={6}
-                      key={index}
-                      sx={{ width: "100px", lineHeight: 0.8 }}
-                    >
-                      {track?.picture && (
-                        <Image
-                          width={100}
-                          height={100}
-                          src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
-                          alt=""
-                        />
-                      )}
-                    </Grid>
-                  ))}
+                  {playlistTracks
+                    .slice(0, 4)
+                    ?.map((track: ITrack, index: number) => (
+                      <Grid
+                        item
+                        xs={6}
+                        key={index}
+                        sx={{ width: "100px", lineHeight: 0.8 }}
+                      >
+                        {track?.picture && (
+                          <Image
+                            width={100}
+                            height={100}
+                            src={
+                              process.env.NEXT_PUBLIC_SERVER_URL +
+                              "/" +
+                              track.picture
+                            }
+                            alt=""
+                          />
+                        )}
+                      </Grid>
+                    ))}
                 </Grid>
                 <Grid
                   container
@@ -106,6 +121,7 @@ const Index = ({ serverPlaylist, initialRememberValue, user }) => {
                     <StyledButton
                       currentTheme={currentTheme}
                       onClick={() => router.push("/tracks/create")}
+                      disabled={false}
                     >
                       <>
                         <span style={{ marginTop: 7 }}>
@@ -127,6 +143,7 @@ const Index = ({ serverPlaylist, initialRememberValue, user }) => {
                           ? "rgba(255, 255, 255, 0.2)"
                           : "rgba(0, 0, 0, 0.2)"
                       }
+                      disabled={false}
                       onClick={() => router.push("/tracks/create")}
                     >
                       <>
@@ -192,7 +209,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
       props: {
         serverPlaylist: params?.id,
         initialRememberValue,
-        user
+        user,
       },
     };
   }

@@ -1,55 +1,45 @@
 import { useTheme } from "next-themes";
-import { GlobalStyles } from "@mui/material";
+import { GlobalStyles, Theme } from "@mui/material";
 import { CssBaseline, ThemeProvider, css } from "@mui/material";
-
-
 import { FC, useEffect, useState } from "react";
 import { darkTheme, lightTheme } from "./theme/createEmotionCasche";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
+import styled from "@emotion/styled/macro";
 
-const MUIThemeProvider: FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const Div = styled.div`
+  min-height: 162.38px;
+`;
+
+const MUIThemeProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { resolvedTheme } = useTheme();
   console.log("resolvedTheme: ", resolvedTheme);
-  const [currentTheme, setCurrentTheme] = useState("darkTheme");
+
+  const [currentTheme, setCurrentTheme] = useState<Theme>(darkTheme);
 
   const { changeTheme } = useTypedSelector((state) => state.player);
   console.log("changeTheme: ", changeTheme);
 
   const [mounted, setMounted] = useState(false);
-  
 
-useEffect(() => {
-  if (!changeTheme) {
-    resolvedTheme === "light"
-      ? setCurrentTheme(lightTheme)
-      : setCurrentTheme(darkTheme);
+  useEffect(() => {
+    if (!changeTheme) {
+      resolvedTheme === "light"
+        ? setCurrentTheme(lightTheme)
+        : setCurrentTheme(darkTheme);
+    }
+  }, [resolvedTheme, changeTheme]);
+
+  useEffect(() => {
+    if (!changeTheme) {
+      setMounted(true);
+    }
+  }, [changeTheme]);
+
+  if (!mounted && !changeTheme) {
+    return <Div />;
   }
-}, [resolvedTheme, changeTheme]);
 
-useEffect(() => {
-  if (!changeTheme) {
-    setMounted(true);
-  }
-}, [changeTheme]);
-
-if (!mounted && !changeTheme) {
-  return (
-    <div
-      css={css`
-        min-height: 162.38px;
-      `}
-    ></div>
-  );
-}
-
-
-  return (
-    <ThemeProvider theme={currentTheme}> 
-      {children}
-    </ThemeProvider>
-  );
+  return <ThemeProvider theme={currentTheme}>{children}</ThemeProvider>;
 };
 
 export default MUIThemeProvider;

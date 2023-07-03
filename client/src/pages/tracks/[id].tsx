@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { ITrack } from "../../../types/track";
 import MainLayout from "@/layouts/MainLayout";
 import {
@@ -28,28 +28,17 @@ import {
   handleChange,
   play,
 } from "@/helpers/trackFunctions";
+import { GetServerSideProps } from "next";
 
-// import { Global } from "@emotion/react";
-// import { globalStyles } from "@/components/styled/Global";
+interface TrackPageProps {
+  initialRememberValue: string | null;
+  serverTrack: any;
+}
 
-// export const globalStyles = css`
-//   ::-webkit-scrollbar {
-//     width: 6px;
-//   }
-//   ::-webkit-scrollbar-track {
-//     background: #f1f1f1;
-//   }
-//   ::-webkit-scrollbar-thumb {
-//     border-radius: 6px;
-//     border: 2px solid #f1f1f1;
-//     background: black;
-//   }
-//   ::--scrollbar-thumb:hover {
-//     background: #555;
-//   }
-// `;
-
-const TrackPage = ({ serverTrack, initialRememberValue }) => {
+const TrackPage: FC<TrackPageProps> = ({
+  serverTrack,
+  initialRememberValue,
+}) => {
   const router = useRouter();
   const dispatch = useDispatch() as NextThunkDispatch;
 
@@ -66,15 +55,15 @@ const TrackPage = ({ serverTrack, initialRememberValue }) => {
   const userName = useInput("");
   const text = useInput("");
 
-  const handlePlay = (e) => {
+  const handlePlay = (e: any) => {
     play(e, setActiveTrack, pauseTrack, track);
   };
 
-  const handleAddOrRemoveToPlaylist = async (e) => {
+  const handleAddOrRemoveToPlaylist = async (e: any) => {
     await addOrRemoveToPlaylist(e, dispatch, track, null, playlists, router);
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     handleChange(
       e,
       setPlaylistChosen,
@@ -83,12 +72,12 @@ const TrackPage = ({ serverTrack, initialRememberValue }) => {
     );
   };
 
-  const handleOpen = (e) => {
+  const handleOpen = (e: any) => {
     e.stopPropagation(e);
     setOpen(true);
   };
 
-  const handleClose = (e) => {
+  const handleClose = (e: any) => {
     e.stopPropagation();
     setOpen(false);
   };
@@ -96,7 +85,7 @@ const TrackPage = ({ serverTrack, initialRememberValue }) => {
   const addComment = async () => {
     try {
       const response = await axios.post(
-      process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/comment",
+        process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/comment",
         {
           userName: userName.value,
           text: text.value,
@@ -111,13 +100,13 @@ const TrackPage = ({ serverTrack, initialRememberValue }) => {
 
   const currentTheme = changeTheme || initialRememberValue;
 
-console.log("env:", process.env.NEXT_PUBLIC_NEXT_PUBLIC_SERVER_URL)
+  console.log("env:", process.env.NEXT_PUBLIC_NEXT_PUBLIC_SERVER_URL);
 
   return (
     <MainLayout
       title={"music tracks host: " + track.name + "-" + track.artist}
       initialRememberValue={initialRememberValue}
-    >     
+    >
       <Button
         //  variant="outlined"
         onClick={() => router.back()}
@@ -129,7 +118,7 @@ console.log("env:", process.env.NEXT_PUBLIC_NEXT_PUBLIC_SERVER_URL)
       {/* <div>TRACK PAGE</div> */}
       <Grid container style={{ margin: "20px 0" }}>
         <Image
-          src={ process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
+          src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
           alt=""
           width={300}
           height={300}
@@ -182,7 +171,7 @@ console.log("env:", process.env.NEXT_PUBLIC_NEXT_PUBLIC_SERVER_URL)
                       style: {
                         overflowY: "scroll",
                         maxHeight: "200px",
-                        scrollbarWidth: "thin",                     
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
@@ -259,7 +248,9 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
 }) => {
-  const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/" + params.id);
+  const response = await axios.get(
+    process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/" + params?.id
+  );
 
   const cookies = nextCookies({ req });
   const initialRememberValue = cookies.rememberMe || null;

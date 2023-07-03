@@ -12,7 +12,7 @@ import { playlistTrackReducer } from "./playlistTrackReducer";
     playlist: playlistReducer,
     playlistTrack: playlistTrackReducer
 })
-export const reducer = (state, action) => {
+export const reducer = (state:any, action:any) => {
     if (action.type === HYDRATE) {
       const nextState = {
         ...state, // use previous state

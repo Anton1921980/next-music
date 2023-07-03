@@ -6,7 +6,7 @@ import { Dispatch } from "react";
 export const fetchTracks = (playlist: string) => {
     return async (dispatch: Dispatch<TrackAction>) => {
         try {
-            const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/?playlist=" + playlist);
+            const response = await axios.get( process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/?playlist=" + playlist );
             dispatch({ type: TrackActionTypes.FETCH_TRACKS, payload: response.data });
             console.log("response TRACKS: ", response.data);
         } catch (e) {
@@ -35,7 +35,7 @@ export const searchTracks = (query: string) => {
 };
 
 
-export const editTrack = (id: number, playlist: string) => {  
+export const editTrack = (id: string|undefined, playlist: string) => {  
     return async (
         dispatch: Dispatch<TrackAction>
     ) => {
@@ -54,7 +54,7 @@ export const editTrack = (id: number, playlist: string) => {
 };
 
 
-export const deleteTrack = (id: number) => {
+export const deleteTrack = (id: number|string) => {
     console.log("id: ", id);
     return async (
         dispatch: Dispatch<TrackAction>

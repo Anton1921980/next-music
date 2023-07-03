@@ -7,16 +7,20 @@ import { Box, Button, Card, Grid, TextField } from "@mui/material";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import nextCookies from "next-cookies";
 
-const Create = ({initialRememberValue}) => {
+interface CreateProps {
+  initialRememberValue: string | null;
+}
+
+const Create: FC<CreateProps> = ({ initialRememberValue }) => {
   const [activeStep, set$activeStep] = useState(0);
   const [picture, set$picture] = useState(null);
   const [audioName, set$audioName] = useState(null);
   const [pictureUrl, set$pictureUrl] = useState(null);
-
   const [audio, set$audio] = useState(null);
+
   const name = useInput("");
   const artist = useInput("");
   const text = useInput("");
@@ -34,9 +38,8 @@ const Create = ({initialRememberValue}) => {
       formData.append("name", name.value);
       formData.append("artist", artist.value);
       formData.append("text", text.value);
-      formData.append("picture", picture);
-      formData.append("audio", audio);
-      console.log("formData: ", formData);
+      picture && formData.append("picture", picture);
+      audio && formData.append("audio", audio);
 
       axios
         .post(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks", formData)
@@ -46,7 +49,7 @@ const Create = ({initialRememberValue}) => {
   };
   return (
     <>
-      <MainLayout  initialRememberValue={initialRememberValue}>
+      <MainLayout initialRememberValue={initialRememberValue}>
         <StepWrapper activeStep={activeStep}>
           {activeStep === 0 && (
             <Grid container direction={"column"} style={{ padding: 20 }}>
@@ -72,7 +75,7 @@ const Create = ({initialRememberValue}) => {
           {activeStep === 1 && (
             <FileUploader
               setFile={set$picture}
-              setPictureUrl={set$pictureUrl}
+              setPictureUrl={set$pictureUrl}           
               accept="image/*"
             >
               <Button>choose image</Button>
@@ -123,7 +126,6 @@ export default Create;
 
 export const getServerSideProps = wrapper.getServerSideProps(
   async ({ req }) => {
-
     const cookies = nextCookies({ req });
     const initialRememberValue = cookies.rememberMe || null;
 

@@ -35,7 +35,7 @@ export class TrackService {
   async getAll(count = 10, offset = 0, playlist: string): Promise<Track[]> {
     let query = {};
     console.log('playlist: ', playlist, typeof playlist);
-    if (playlist == 'undefined' || undefined) {
+    if (playlist == '') {
       query = {};
     } else if (playlist?.includes('s=')) {
       query = { playlists: { $ne: playlist.substring(2) } };

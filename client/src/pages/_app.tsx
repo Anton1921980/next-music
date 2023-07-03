@@ -16,7 +16,7 @@
 import React, {FC} from 'react';
 import {AppProps} from 'next/app';
 import {wrapper} from "../store";
-import { PersistGate } from 'redux-persist/integration/react';
+// import { PersistGate } from 'redux-persist/integration/react';
 
 const WrappedApp: FC<AppProps> = ({Component, pageProps}) => (
     // <PersistGate >

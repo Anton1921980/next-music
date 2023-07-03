@@ -4,7 +4,7 @@ interface TrackProgressProps {
   progress: boolean;
   left: number;
   right: number;
-  onChange: (e) => void;
+  onChange: (e:any) => void;
 }
 
 const TrackProgress: React.FC<TrackProgressProps> = ({
@@ -19,7 +19,7 @@ const TrackProgress: React.FC<TrackProgressProps> = ({
   const rightMargin = progress ? "5px" : "0px";
   const backgroundColor = progress ? "red" : "lightgray";
 
-  const minSec = (s) => {
+  const minSec = (s:any) => {
     return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
   }; //minutes seconds format
 

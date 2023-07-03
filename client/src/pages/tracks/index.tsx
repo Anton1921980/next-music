@@ -1,5 +1,5 @@
 import MainLayout from "@/layouts/MainLayout";
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Box, Button, Card, Grid, TextField } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
@@ -17,12 +17,11 @@ import { StyledButton } from "@/components/styled/StyledButton";
 
 
 
-const Index = ({ initialRememberValue }) => {
+interface IndexProps {
+  initialRememberValue: string | null;
+}
+const Index: FC<IndexProps> = ({ initialRememberValue }) => {
   const { changeTheme } = useTypedSelector((state) => state.player);
-
-  // const [buttonColor, setButtonColor] = useState(
-  //   changeTheme || initialRememberValue === "dark" ? "white" : "gray"
-  // );
 
   const router = useRouter();
   const { tracks, error: trackError } = useTypedSelector(
@@ -31,13 +30,6 @@ const Index = ({ initialRememberValue }) => {
   const { playlists, error: playlistError } = useTypedSelector(
     (state) => state.playlist
   );
-
-  // useEffect(() => {
-  //   setButtonColor(
-  //     changeTheme || initialRememberValue === "dark" ? "white" : "gray"
-  //   );
-  //   console.log("changeTheme: ", changeTheme);
-  // }, [changeTheme]);
 
   if (trackError || playlistError) {
     return (
@@ -98,7 +90,7 @@ export default Index;
 export const getServerSideProps = wrapper.getServerSideProps(
   async ({ store, req }) => {
     const dispatch = store?.dispatch as NextThunkDispatch;
-    await dispatch(await fetchTracks());
+    await dispatch(await fetchTracks(""));
     await dispatch(await fetchPlaylists());
 
     const cookies = nextCookies({ req });

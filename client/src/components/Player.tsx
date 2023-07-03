@@ -21,10 +21,11 @@ import { NextThunkDispatch } from "@/store";
 import { editTrack, fetchTracks } from "@/store/actions-creators/track";
 import { useRouter } from "next/router";
 import { fetchPlaylistTracks } from "@/store/actions-creators/playlist";
+import { ITrack } from "../../types/track";
 
-let audio; //in browser
+let audio: HTMLAudioElement | undefined; //in browser
 
-const Player = ({ store }) => {
+const Player = () => {
   
   const { pause, volume, duration, active, currentPlaylist, currentTime } =
     useTypedSelector((state) => state.player);
@@ -49,19 +50,21 @@ const Player = ({ store }) => {
   const play = () => {
     if (pause) {
       playTrack();
-      audio.play();
+      audio?.play();
     } else {
       pauseTrack();
-      audio.pause();
+      audio?.pause();
     }
   };
   console.log("pause: ", pause);
-  const tracklist = playlistTracks?.find((track) => track._id === active?._id)
+  const tracklist = playlistTracks?.find((track: ITrack) => track._id === active?._id)
     ? playlistTracks
     : tracks;
 
   const playPrev = () => {
-    let currentIndex = setActiveTrack;
+    let currentIndex =  tracklist.findIndex(
+      (track: ITrack) => track._id === active?._id
+    );
     let prevTrackIndex =
       currentIndex > 0 ? currentIndex - 1 : tracklist.length - 1;
     let prevTrack = tracklist[prevTrackIndex];
@@ -71,7 +74,7 @@ const Player = ({ store }) => {
 
   const playNext = () => {
     let currentIndex = tracklist.findIndex(
-      (track) => track._id === active?._id
+      (track: ITrack) => track._id === active?._id
     );
     let nextTrackIndex =
       currentIndex < tracklist.length - 1 ? currentIndex + 1 : 0;
@@ -80,25 +83,25 @@ const Player = ({ store }) => {
     pauseTrack();
   };
 
-  const addOrRemoveToPlaylist = async (e) => {
+  const addOrRemoveToPlaylist = async (e: any) => {
     e.stopPropagation();
     await dispatch(await editTrack(active?._id, "65607b03d37e11026be70623"));
 
     // Fetch the updated tracklist
     router.pathname !== "/tracks"
       ? await dispatch(await fetchTracks(`s=${currentPlaylist}`))
-      : await dispatch(await fetchTracks());
-    await dispatch(await fetchPlaylistTracks(currentPlaylist));  
+      : await dispatch(await fetchTracks(""));
+    await dispatch(await fetchPlaylistTracks(currentPlaylist?.toString()||""));  
   };
 
   useEffect(() => {
     // Update the active track
-    const tracklist = playlistTracks?.find((track) => track._id === active?._id)
+    const tracklist = playlistTracks?.find((track: ITrack) => track?._id === active?._id)
       ? playlistTracks
       : tracks;
     const updatedTrack = tracklist?.find(
       // tracklist
-      (track) => track._id === active?._id
+      (track: ITrack) => track._id === active?._id
     );
     console.log("updatedTrack: ", updatedTrack);
     updatedTrack && setActiveTrack(updatedTrack);
@@ -115,26 +118,26 @@ const Player = ({ store }) => {
   }, [active]);
 
   const setAudio = () => {
-    if (active) {
-      audio.src = process.env.NEXT_PUBLIC_SERVER_URL + "/" + active.audio;
+    if (active && audio) {
+      audio.src = process.env.NEXT_PUBLIC_SERVER_URL + "/" + active?.audio;
       audio.volume = volume / 100; //must be from 0-1
       audio.onloadedmetadata = () => {
-        setDuration(Math.ceil(audio.duration));
+        setDuration(Math.ceil(audio?.duration||0));
         // audio.currentTime = 0; // Reset progress bar to the start
       };
       audio.ontimeupdate = () => {
-        setCurrentTime(Math.ceil(audio.currentTime));
+        setCurrentTime(Math.ceil(audio?.currentTime||0));
       };
     }
   };
 
   const changeVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
-    audio.volume = Number(e.target?.value) / 100;
+   audio&&(audio.volume = Number(e.target?.value) / 100);
     setVolume(Number(e.target?.value));
   };
 
   const changeCurrentTime = (e: React.ChangeEvent<HTMLInputElement>) => {
-    audio.currentTime = Number(e.target?.value);
+    audio&&(audio.currentTime = Number(e.target?.value));
     setCurrentTime(Number(e.target?.value));
   };
   if (!active) {

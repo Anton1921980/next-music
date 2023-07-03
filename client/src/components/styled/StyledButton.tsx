@@ -1,9 +1,21 @@
-
-import { Button } from "@mui/material";
+import { Button, ButtonProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { PaletteMode } from "@mui/material";
 
+interface StyledButtonProps extends ButtonProps {
+  currentTheme?: PaletteMode|any;
+  width?:  string|null;
+  backgroundColor?:  string|null;
+  colorPlay?:  string|null;
+  padding?:  string|null;
+  margin?:  string|null;
+  borderColor?: string|null;
+  disabled?: boolean;
+  onClick?: any;
+  // інші пропи...
+}
 
-export const StyledButton = styled(Button)`
+export const StyledButton = styled(({ currentTheme, ...props }: StyledButtonProps) => <Button {...props} />)`
   width:${(props)=>{console.log('props',props.currentTheme); return props?.width}};    
   height: auto;
   color: ${(props) => (props.colorPlay ? props.colorPlay : (props?.currentTheme === "dark" ? "white" : "gray"))};

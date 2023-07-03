@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ITrack } from "../types/track";
+
 import {
   Grid,
   IconButton,
@@ -37,6 +37,9 @@ import {
   play,
 } from "@/helpers/trackFunctions";
 
+import { IPlaylist } from "../../types/playlist";
+import { ITrack } from "../../types/track";
+
 interface TrackItemProps {
   track: ITrack;
   // active?: boolean;
@@ -60,15 +63,15 @@ const TrackItem: React.FC<TrackItemProps> = ({
 
   const dispatch = useDispatch() as NextThunkDispatch;
 
-  const handlePlay = (e) => {
+  const handlePlay = (e:any) => {
     play(e, setActiveTrack, pauseTrack, track);
   };
 
-  const handleDeleteTrack = async (e) => {
+  const handleDeleteTrack = async (e:any) => {
     await delTrack(e, dispatch, track);
   };
 
-  const handleAddOrRemoveToPlaylist = async (e) => {
+  const handleAddOrRemoveToPlaylist = async (e:any) => {
     await addOrRemoveToPlaylist(
       e,
       dispatch,
@@ -79,7 +82,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
     );
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e:any) => {
     handleChange(
       e,
       setPlaylistChosen,
@@ -88,13 +91,13 @@ const TrackItem: React.FC<TrackItemProps> = ({
     );
   };
 
-  const handleOpen = (e) => {
+  const handleOpen = (e:any) => {
     e.stopPropagation();
     e.currentTarget.value === "add" ? set$openAdd(true) : set$openRemove(true);
     console.log(" e.target.value: ", e);
   };
 
-  const handleClose = (e) => {
+  const handleClose = (e:any) => {
     e.stopPropagation();
     openAdd ? set$openAdd(false) : set$openRemove(false);
   };
@@ -199,8 +202,8 @@ const TrackItem: React.FC<TrackItemProps> = ({
                   add to Playlist:
                 </ListSubheader>
                 {playlists
-                  ?.filter((item) => !track.playlists.includes(item._id))
-                  .map((item) => (
+                  ?.filter((item:IPlaylist) => !track.playlists.includes(item._id))
+                  .map((item:IPlaylist) => (
                     <MenuItem key={item._id} value={item._id}>
                       <Add />
                       {item.name}
@@ -239,8 +242,8 @@ const TrackItem: React.FC<TrackItemProps> = ({
                   remove from Playlist:
                 </ListSubheader>
                 {playlists
-                  ?.filter((item) => track.playlists.includes(item._id))
-                  .map((item) => (
+                  ?.filter((item:IPlaylist) => track?.playlists?.includes(item._id))
+                  .map((item:IPlaylist) => (
                     <MenuItem key={item._id} value={item._id}>
                       <Remove /> {item.name}
                     </MenuItem>

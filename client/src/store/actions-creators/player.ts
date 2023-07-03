@@ -20,7 +20,7 @@ export const setCurrentTime = (payload: number): PlayerAction => {
 export const setActiveTrack = (payload: ITrack): PlayerAction => {
     return {type: PlayerActionTypes.SET_ACTIVE, payload}
 }
-export const setCurrentPlaylist = (payload: number): PlayerAction => {
+export const setCurrentPlaylist = (payload: any): PlayerAction => {
     return {type: PlayerActionTypes.SET_CURRENT_PLAYLIST, payload}
 }
 export const setChangeTheme = (payload: string): PlayerAction => {

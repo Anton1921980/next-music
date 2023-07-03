@@ -13,6 +13,7 @@ const steps = ["input track info", "load track picture", "load track file"];
 
 interface StepWrapperProps {
   activeStep: number;
+  children: any;
 }
 const StepWrapper: React.FC<StepWrapperProps> = ({ activeStep, children }) => {
   return (

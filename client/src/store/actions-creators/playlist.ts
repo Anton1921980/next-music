@@ -4,7 +4,7 @@ import { PlaylistAction, PlaylistActionTypes } from "../../../types/playlist";
 import { TrackAction, TrackActionTypes } from "../../../types/track";
 
 
-export const fetchPlaylistTracks = (playlist: string) => {
+export const fetchPlaylistTracks = (playlist: any) => {
     return async (dispatch: Dispatch<TrackAction>) => {
         try {
             const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/?playlist=" + playlist);
