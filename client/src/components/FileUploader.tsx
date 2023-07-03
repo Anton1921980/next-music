@@ -16,11 +16,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   children,
 }) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e?.target?.files[0] && setFile(e.target?.files[0]);
-    (e?.target?.files[0]?.type === "image/jpeg")
-      ? setPictureUrl(URL.createObjectURL(e?.target?.files[0]))
-      : setAudioName(e?.target?.files[0]?.name);
+    if (e.target.files) {
+      e.target.files[0] && setFile(e.target.files[0]);
+      (e.target.files[0]?.type === "image/jpeg")
+        ? setPictureUrl(URL.createObjectURL(e.target.files[0]))
+        : setAudioName(e.target.files[0]?.name);
+    }
   };
+  
   const ref = useRef<HTMLInputElement>();
 
   return (
