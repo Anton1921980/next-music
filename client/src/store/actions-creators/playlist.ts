@@ -7,7 +7,7 @@ import { TrackAction, TrackActionTypes } from "../../../types/track";
 export const fetchPlaylistTracks = (playlist: string) => {
     return async (dispatch: Dispatch<TrackAction>) => {
         try {
-            const response = await axios.get("http://localhost:5000/tracks/?playlist=" + playlist);
+            const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/?playlist=" + playlist);
             dispatch({ type: TrackActionTypes.FETCH_PLAYLIST_TRACKS, payload: response.data });
         } catch (e) {
             dispatch({
@@ -22,7 +22,7 @@ export const fetchPlaylistTracks = (playlist: string) => {
 export const fetchPlaylists = () => {
     return async (dispatch: Dispatch<PlaylistAction>) => {
         try {
-            const response = await axios.get("http://localhost:5000/tracks/playlists");
+            const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/playlists");
             dispatch({ type: PlaylistActionTypes.FETCH_PLAYLISTS, payload: response.data });
             console.log("response PLAYLISTS: ", response.data);
         } catch (e) {
@@ -42,7 +42,7 @@ export const deletePlaylist = (id: number) => {
     ) => {
         try {
             console.log("id2: ", id);
-            const response = await axios.delete(`http://localhost:5000/tracks/playlists/${id}`);
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/playlists/${id}`);
             console.log("response: ", response.data);
             dispatch({ type: PlaylistActionTypes.DELETE_PLAYLIST, payload: response.data });
         } catch (e) {

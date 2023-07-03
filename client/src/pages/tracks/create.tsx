@@ -39,7 +39,7 @@ const Create = ({initialRememberValue}) => {
       console.log("formData: ", formData);
 
       axios
-        .post("http://localhost:5000/tracks", formData)
+        .post(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks", formData)
         .then((response) => router.push("/tracks"))
         .catch((error) => console.log("Error", error));
     }

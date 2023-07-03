@@ -145,7 +145,7 @@ export default function Navbar({ children }) {
   const addPlaylist = () => {
     console.log("name: ", name.value);
     axios
-      .post("http://localhost:5000/tracks/playlist", { name: name.value })
+      .post(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/playlist`, { name: name.value })
       .then((response) => router.push("/tracks").then(handleVisible))
       .catch((error) => console.log("Error", error));
   };

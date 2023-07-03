@@ -96,7 +96,7 @@ const TrackPage = ({ serverTrack, initialRememberValue }) => {
   const addComment = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/tracks/comment",
+      process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/comment",
         {
           userName: userName.value,
           text: text.value,
@@ -110,6 +110,8 @@ const TrackPage = ({ serverTrack, initialRememberValue }) => {
   };
 
   const currentTheme = changeTheme || initialRememberValue;
+
+console.log("env:", process.env.NEXT_PUBLIC_NEXT_PUBLIC_SERVER_URL)
 
   return (
     <MainLayout
@@ -127,7 +129,7 @@ const TrackPage = ({ serverTrack, initialRememberValue }) => {
       {/* <div>TRACK PAGE</div> */}
       <Grid container style={{ margin: "20px 0" }}>
         <Image
-          src={"http://localhost:5000/" + track.picture}
+          src={ process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
           alt=""
           width={300}
           height={300}
@@ -257,7 +259,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
 }) => {
-  const response = await axios.get("http://localhost:5000/tracks/" + params.id);
+  const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/" + params.id);
 
   const cookies = nextCookies({ req });
   const initialRememberValue = cookies.rememberMe || null;

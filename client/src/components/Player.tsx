@@ -116,7 +116,7 @@ const Player = ({ store }) => {
 
   const setAudio = () => {
     if (active) {
-      audio.src = "http://localhost:5000/" + active.audio;
+      audio.src = process.env.NEXT_PUBLIC_SERVER_URL + "/" + active.audio;
       audio.volume = volume / 100; //must be from 0-1
       audio.onloadedmetadata = () => {
         setDuration(Math.ceil(audio.duration));
@@ -171,7 +171,7 @@ const Player = ({ store }) => {
               style={{ marginTop: "20px" }}
               width={50}
               height={50}
-              src={"http://localhost:5000/" + active?.picture}
+              src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + active?.picture}
               alt=""
             />
           )}
