@@ -24,7 +24,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     }
   };
   
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<HTMLInputElement | null>(null);
 
   return (
     <div onClick={() => ref?.current?.click()}>
