@@ -18,8 +18,8 @@
             ]
         },
         {
-            "src": "/static/(.*)",
-            "dest": "/static/$1"
+            "src": "/image/(.*)",
+            "dest": "static/image/$1"
         }
     ] 
 }
