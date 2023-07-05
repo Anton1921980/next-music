@@ -19,7 +19,7 @@
         },
         {
             "src": "/image/(.*)",
-            "dest": "static/image/$1"
+            "dest": "/static/image/$1"
         }
     ] 
 }
