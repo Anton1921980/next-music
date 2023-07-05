@@ -9,32 +9,47 @@
     "routes": [
         {
             "src": "/image/(.*)",
+            "headers": {
+                "Access-Control-Allow-Origin": "*"
+              },
             "dest": "static/image/$1",
             "methods": [
                 "GET",
                 "POST",
                 "PUT",
-                "DELETE"
+                "DELETE", 
+                "PATCH",
+                "OPTIONS"
             ]
         },
         {
             "src": "/audio/(.*)",
+            "headers": {
+                "Access-Control-Allow-Origin": "*"
+              },
             "dest": "/static/audio/$1",
             "methods": [
                 "GET",
                 "POST",
                 "PUT",
-                "DELETE"
+                "DELETE", 
+                "PATCH",
+                "OPTIONS"
             ]
         },
         {
             "src": "/((?!image|audio).*)",
+            "headers": {
+                "Access-Control-Allow-Origin": "*"
+              },
             "dest": "src/main.ts",
             "methods": [
                 "GET",
                 "POST",
                 "PUT",
-                "DELETE"
+                "DELETE", 
+                "PATCH",
+                "OPTIONS"
             ]
         }
     ] 
