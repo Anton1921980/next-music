@@ -20,6 +20,9 @@
         {
             "src": "/image/(.*)",
             "dest": "/static/image/$1"
+        }, {
+            "src": "/audio/(.*)",
+            "dest": "/static/audio/$1"
         }
     ] 
 }
