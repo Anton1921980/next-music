@@ -9,11 +9,23 @@
     "routes": [
         {
             "src": "/image/(.*)",
-            "dest": "/static/image/$1"
+            "dest": "static/image/$1",
+            "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ]
         },
         {
             "src": "/audio/(.*)",
-            "dest": "/static/audio/$1"
+            "dest": "/static/audio/$1",
+            "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ]
         },
         {
             "src": "/((?!image|audio).*)",
