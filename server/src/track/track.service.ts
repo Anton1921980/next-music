@@ -1,4 +1,4 @@
-import { FileService, FileType } from './../file/file.service';
+import { FileService, FileType } from '../file/file.service';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Track, TrackDocument } from './schemas/track.schema';
