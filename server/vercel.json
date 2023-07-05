@@ -8,7 +8,15 @@
     ],
     "routes": [
         {
-            "src": "/(.*)",
+            "src": "/image/(.*)",
+            "dest": "/static/image/$1"
+        },
+        {
+            "src": "/audio/(.*)",
+            "dest": "/static/audio/$1"
+        },
+        {
+            "src": "/((?!image|audio).*)",
             "dest": "src/main.ts",
             "methods": [
                 "GET",
@@ -16,13 +24,6 @@
                 "PUT",
                 "DELETE"
             ]
-        },
-        {
-            "src": "/image/(.*)",
-            "dest": "/static/image/$1"
-        }, {
-            "src": "/audio/(.*)",
-            "dest": "/static/audio/$1"
         }
     ] 
 }
