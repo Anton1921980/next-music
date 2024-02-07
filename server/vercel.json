@@ -8,6 +8,14 @@
         {
             "src": "static/*",
             "use": "@vercel/static"
+        },
+        {
+            "src": "/audio/*",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "/image/*",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
