@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 
 async function start() {
   try {
-    //copy music to dist folder cause server restarting removes it 
+    //copy music to dist folder cause server restarting removes it
     const filePath = path.resolve(__dirname, '..', 'static');
     fs.mkdirSync(filePath, { recursive: true });
     fs.copy('./static', './dist/static', function (err) {
