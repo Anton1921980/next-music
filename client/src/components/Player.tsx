@@ -170,7 +170,7 @@ const Player = () => {
         </Grid>
         <Box sx={{ display: "flex" }}>
           {active?.picture && (
-            <Image
+            <img
               style={{ marginTop: "20px" }}
               width={50}
               height={50}

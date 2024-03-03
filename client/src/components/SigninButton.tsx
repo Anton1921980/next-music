@@ -15,7 +15,7 @@ const SigninButton = () => {
   if (session && session.user) {
     return (
       <div style={{ display: "flex", marginLeft: "auto" }}>
-        <Image
+        <img
           src={session?.user?.image || ""}
           width={40}
           height={40}

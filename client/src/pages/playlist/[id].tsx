@@ -88,7 +88,7 @@ const Index: FC<IndexProps> = ({
                         sx={{ width: "100px", lineHeight: 0.8 }}
                       >
                         {track?.picture && (
-                          <Image
+                          <img
                             width={100}
                             height={100}
                             src={

@@ -119,7 +119,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
           {active?._id === track._id ? <Pause /> : <PlayArrow />}
         </IconButton>
         {track?.picture && (
-          <Image
+          <img
             width={40}
             height={40}
             src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
