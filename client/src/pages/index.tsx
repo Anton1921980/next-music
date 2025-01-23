@@ -1,16 +1,21 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Navbar from "@/components/Navbar";
 import MainLayout from "@/layouts/MainLayout";
 import { wrapper } from "@/store";
 import nextCookies from "next-cookies";
+import { startKeepAlive } from "@/utils/keepAlive";
 
 interface IndexProps {
   initialRememberValue: string | null;
 }
 
-
 const Index: FC<IndexProps>  = ({ initialRememberValue }) => {
+  useEffect(() => {
+    const cleanup = startKeepAlive();
+    return () => cleanup();
+  }, []);
+
   return (
     <>
       <MainLayout initialRememberValue={initialRememberValue}>
