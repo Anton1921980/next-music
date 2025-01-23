@@ -1,7 +1,7 @@
 # Next Music
 
-A modern music streaming platform built with Next.js and NestJS.
-
+A modern music streaming platform built with Next.js and NestJS inspired by Youtube Music.
+see demo deployed on Vercel: https://next-music-nine.vercel.app/ 
 ## 🚀 Features
 
 - Modern and responsive UI built with Material-UI
@@ -33,24 +33,6 @@ A modern music streaming platform built with Next.js and NestJS.
 
 ## 🏗️ Project Structure
 
-```
-next-music/
-├── client/             # Frontend Next.js application
-│   ├── src/
-│   │   ├── components/ # Reusable React components
-│   │   ├── pages/     # Next.js pages
-│   │   ├── store/     # Redux store configuration
-│   │   ├── utils/     # Utility functions
-│   │   └── layouts/   # Page layouts
-│   └── public/        # Static files
-│
-└── server/            # Backend NestJS application
-    └── src/
-        ├── controllers/
-        ├── services/
-        ├── models/
-        └── modules/
-```
 
 ## 🚦 Getting Started
 
@@ -113,19 +95,6 @@ The application implements a keep-alive mechanism to prevent the server from sle
 - Automatically starts when users visit the main page
 - Includes error handling and cleanup
 
-## 📝 Scripts
-
-### Client
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run linting
-
-### Server
-- `npm run start:dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start:prod` - Start production server
-- `npm run test` - Run tests
 
 ## 🤝 Contributing
 
