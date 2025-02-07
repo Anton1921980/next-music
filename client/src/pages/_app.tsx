@@ -1,27 +1,10 @@
-// import React, {FC} from 'react';
-// import {Provider} from 'react-redux';
-// import {AppProps} from 'next/app';
-// import {wrapper} from '../store';
-
-// const MyApp: FC<AppProps> = ({Component, ...rest}) => {
-//   const {store, props} = wrapper.useWrappedStore(rest);
-//   return (
-//     <Provider store={store}>
-//       <Component {...props.pageProps} />
-//     </Provider>
-//   );
-// };
-// export default wrapper.withRedux(MyApp);
-
 import React, {FC} from 'react';
 import {AppProps} from 'next/app';
 import {wrapper} from "../store";
-// import { PersistGate } from 'redux-persist/integration/react';
+import '@/styles/globals.css';
 
 const WrappedApp: FC<AppProps> = ({Component, pageProps}) => (
-    // <PersistGate >
     <Component {...pageProps} />
-    // </PersistGate>
 );
 
 export default wrapper.withRedux(WrappedApp);
@@ -54,6 +37,3 @@ export default wrapper.withRedux(WrappedApp);
 // }
 
 // export default wrapper.withRedux(WrappedApp);
-
-
-

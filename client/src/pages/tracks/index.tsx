@@ -15,13 +15,14 @@ import { AddSharp } from "@mui/icons-material";
 import nextCookies from "next-cookies";
 import { StyledButton } from "@/components/styled/StyledButton";
 
-
-
 interface IndexProps {
   initialRememberValue: string | null;
 }
+
 const Index: FC<IndexProps> = ({ initialRememberValue }) => {
   const { changeTheme } = useTypedSelector((state) => state.player);
+  const [isLoading, setIsLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
 
   const router = useRouter();
   const { tracks, error: trackError } = useTypedSelector(
@@ -30,6 +31,48 @@ const Index: FC<IndexProps> = ({ initialRememberValue }) => {
   const { playlists, error: playlistError } = useTypedSelector(
     (state) => state.playlist
   );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await dispatch(fetchTracks("") as any);
+        setIsLoading(false);
+      } catch (error) {
+        if (retryCount < 2) {
+          setTimeout(() => {
+            setRetryCount((prev) => prev + 1);
+          }, 20000);
+        } else {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+  }, [retryCount]);
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+          flexDirection="column"
+        >
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+            <div className="spinner"></div>
+          </Box>
+          <Box sx={{ textAlign: "center", maxWidth: "400px" }}>
+            Server is on Vercel FREE plan, so first load is up to 1 min please
+            wait. It is not an app issue.
+          </Box>
+        </Box>
+      </MainLayout>
+    );
+  }
 
   if (trackError || playlistError) {
     return (
@@ -50,9 +93,7 @@ const Index: FC<IndexProps> = ({ initialRememberValue }) => {
           justifyContent="center"
           sx={{ backgroundColor: "inherit", marginBottom: "20px" }}
         >
-          <Card
-          // style={{ width: "80%" }}
-          >
+          <Card>
             <Box p={3} sx={{ backgroundColor: "inherit" }}>
               <Grid
                 container-fluid
@@ -82,8 +123,6 @@ const Index: FC<IndexProps> = ({ initialRememberValue }) => {
     </>
   );
 };
-
-// Index.getInitialProps = MainLayout.getInitialProps;
 
 export default Index;
 
