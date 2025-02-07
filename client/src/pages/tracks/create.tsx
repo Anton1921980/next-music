@@ -3,11 +3,11 @@ import StepWrapper from "@/components/StepWrapper";
 import { useInput } from "@/hooks/useInpute";
 import MainLayout from "@/layouts/MainLayout";
 import { wrapper } from "@/store";
-import { Box, Button, Card, Grid, TextField } from "@mui/material";
+import { Box, Button, Card, Grid, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import nextCookies from "next-cookies";
 
 interface CreateProps {
@@ -15,24 +15,73 @@ interface CreateProps {
 }
 
 const Create: FC<CreateProps> = ({ initialRememberValue }) => {
-  const [activeStep, set$activeStep] = useState(0);
-  const [picture, set$picture] = useState(null);
-  const [audioName, set$audioName] = useState(null);
-  const [pictureUrl, set$pictureUrl] = useState(null);
-  const [audio, set$audio] = useState(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const [picture, setPicture] = useState<File | null>(null);
+  const [audioName, setAudioName] = useState<string | null>(null);
+  const [pictureUrl, setPictureUrl] = useState<string | null>(null);
+  const [audio, setAudio] = useState<File | null>(null);
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
+  const [touchedFields, setTouchedFields] = useState({
+    name: false,
+    artist: false,
+    text: false
+  });
 
-  const name = useInput("");
-  const artist = useInput("");
-  const text = useInput("");
+  const name = useInput("", { required: true, minLength: 1 });
+  const artist = useInput("", { required: true, minLength: 1 });
+  const text = useInput("", { required: true, minLength: 1 });
 
   const router = useRouter();
 
-  const back = () => {
-    set$activeStep((prev) => prev - 1);
+  // Перевірка валідації для кожного кроку
+  useEffect(() => {
+    switch (activeStep) {
+      case 0:
+        setIsNextDisabled(
+          !name.value.trim() || 
+          !artist.value.trim() || 
+          !text.value.trim() ||
+          name.value.length < 1 ||
+          artist.value.length < 1 ||
+          text.value.length < 1
+        );
+        break;
+      case 1:
+        setIsNextDisabled(!picture);
+        break;
+      case 2:
+        setIsNextDisabled(!audio);
+        break;
+      default:
+        setIsNextDisabled(false);
+    }
+  }, [activeStep, name.value, artist.value, text.value, picture, audio]);
+
+  const handleFieldBlur = (field: keyof typeof touchedFields) => {
+    setTouchedFields(prev => ({
+      ...prev,
+      [field]: true
+    }));
   };
+
+  const back = () => {
+    setActiveStep((prev) => prev - 1);
+  };
+
   const next = () => {
+    // Позначаємо всі поля як зачеплені при спробі переходу далі
+    if (activeStep === 0) {
+      setTouchedFields({
+        name: true,
+        artist: true,
+        text: true
+      });
+      
+      if (isNextDisabled) return;
+    }
+
     if (activeStep !== 2) {
-      set$activeStep((prev) => prev + 1);
+      setActiveStep((prev) => prev + 1);
     } else {
       const formData = new FormData();
       formData.append("name", name.value);
@@ -47,78 +96,131 @@ const Create: FC<CreateProps> = ({ initialRememberValue }) => {
         .catch((error) => console.log("Error", error));
     }
   };
-  return (
-    <>
-      <MainLayout initialRememberValue={initialRememberValue}>
-        <StepWrapper activeStep={activeStep}>
-          {activeStep === 0 && (
-            <Grid container direction={"column"} style={{ padding: 20 }}>
-              <TextField
-                {...name}
-                style={{ marginTop: 10 }}
-                label={"track name"}
-              />
-              <TextField
-                {...artist}
-                style={{ marginTop: 10 }}
-                label={"artist"}
-              />
-              <TextField
-                {...text}
-                style={{ marginTop: 10 }}
-                label={"track text"}
-                multiline
-                rows={5}
-              />
-            </Grid>
-          )}
-          {activeStep === 1 && (
-            <FileUploader
-              setFile={set$picture}
-              setPictureUrl={set$pictureUrl}           
-              accept="image/*"
-            >
-              <Button>choose image</Button>
-            </FileUploader>
-          )}
-          {activeStep === 2 && (
-            <FileUploader
-              setFile={set$audio}
-              setAudioName={set$audioName}
-              accept="audio/*"
-            >
-              <Button>choose audio</Button>
-            </FileUploader>
-          )}
 
-          {name.value && artist.value && text.value && (
-            <>
-              <div>TRACK: {name.value}</div>
-              <div>ARTIST: {artist.value}</div>
-              <div>TEXT: {text?.value?.slice(0, 50)}...</div>
-            </>
-          )}
-          {audioName && <div>AUDIO: {audioName}</div>}
-          {pictureUrl && (
-            <div style={{ width: "30%", overflow: "hidden" }}>
-              <img
-                style={{ objectFit: "contain", width: "70%" }}
-                src={pictureUrl}
-                alt=""
-              />
-            </div>
-          )}
-        </StepWrapper>
-        <Grid container justifyContent="space-between">
-          <Button disabled={activeStep === 0} onClick={back}>
-            back
-          </Button>
-          <Button disabled={activeStep === 5} onClick={next}>
-            next
-          </Button>
-        </Grid>
-      </MainLayout>
-    </>
+  const renderTrackInfo = () => {
+    if (!name.value && !artist.value && !text.value && !audioName) {
+      return null;
+    }
+
+    return (
+      <Box mt={3} p={2} bgcolor="rgba(0, 0, 0, 0.03)" borderRadius={1}>
+        <Typography variant="h6" gutterBottom>
+          Track Preview
+        </Typography>
+        {name.value && (
+          <Typography variant="body1">
+            <strong>Track:</strong> {name.value}
+          </Typography>
+        )}
+        {artist.value && (
+          <Typography variant="body1">
+            <strong>Artist:</strong> {artist.value}
+          </Typography>
+        )}
+        {text.value && (
+          <Typography variant="body1">
+            <strong>Lyrics:</strong> {text.value.slice(0, 100)}
+            {text.value.length > 100 ? '...' : ''}
+          </Typography>
+        )}
+        {audioName && (
+          <Typography variant="body1">
+            <strong>Audio:</strong> {audioName}
+          </Typography>
+        )}
+      </Box>
+    );
+  };
+
+  return (
+    <MainLayout initialRememberValue={initialRememberValue}>
+      <StepWrapper activeStep={activeStep}>
+        {activeStep === 0 && (
+          <Grid container direction="column" style={{ padding: 20 }}>
+            <TextField
+              {...name}
+              required
+              error={touchedFields.name && !name.value.trim()}
+              style={{ marginTop: 10 }}
+              label="Track name"
+              helperText={touchedFields.name && !name.value.trim() ? "This field is required" : ""}
+              onBlur={() => handleFieldBlur('name')}
+            />
+            <TextField
+              {...artist}
+              required
+              error={touchedFields.artist && !artist.value.trim()}
+              style={{ marginTop: 10 }}
+              label="Artist name"
+              helperText={touchedFields.artist && !artist.value.trim() ? "This field is required" : ""}
+              onBlur={() => handleFieldBlur('artist')}
+            />
+            <TextField
+              {...text}
+              required
+              error={touchedFields.text && !text.value.trim()}
+              style={{ marginTop: 10 }}
+              label="Track lyrics"
+              multiline
+              rows={3}
+              helperText={touchedFields.text && !text.value.trim() ? "This field is required" : ""}
+              onBlur={() => handleFieldBlur('text')}
+            />
+          </Grid>
+        )}
+        {activeStep === 1 && (
+          <Box textAlign="center">
+            <FileUploader setFile={setPicture} accept="image/*" setPictureUrl={setPictureUrl}>
+              <Button variant="contained">
+                {pictureUrl ? "Change cover image" : "Upload cover image"}
+              </Button>
+            </FileUploader>
+            {pictureUrl && (
+              <Box mt={2}>
+                <Image 
+                  width={300} 
+                  height={300} 
+                  src={pictureUrl} 
+                  alt="Cover preview"
+                  style={{ objectFit: 'cover', borderRadius: '4px' }}
+                />
+              </Box>
+            )}
+          </Box>
+        )}
+        {activeStep === 2 && (
+          <Box textAlign="center">
+            <FileUploader setFile={setAudio} accept="audio/*" setAudioName={setAudioName}>
+              <Button variant="contained">
+                {audioName ? "Change audio file" : "Upload audio file"}
+              </Button>
+            </FileUploader>
+            {audioName && (
+              <Typography variant="body1" mt={2}>
+                Selected file: {audioName}
+              </Typography>
+            )}
+          </Box>
+        )}
+        {renderTrackInfo()}
+      </StepWrapper>
+      <Grid container justifyContent="space-between">
+        <Button 
+          variant="outlined"
+          disabled={activeStep === 0} 
+          onClick={back}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          disabled={isNextDisabled}
+          onClick={next}
+        >
+          {activeStep === 2 ? "Create" : "Next"}
+        </Button>
+      </Grid>
+    </MainLayout>
   );
 };
 

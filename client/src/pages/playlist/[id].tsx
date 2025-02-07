@@ -24,22 +24,23 @@ import { ITrack } from "../../../types/track";
 
 interface IndexProps {
   initialRememberValue: string | null;
-  serverPlaylist: any;
+  serverPlaylist: string;
   user: string | null;
+  error?: string;
 }
+
 const Index: FC<IndexProps> = ({
   serverPlaylist,
   initialRememberValue,
   user,
+  error,
 }) => {
   console.log("user: ", user);
   console.log("serverPlaylist: ", serverPlaylist);
 
   const router = useRouter();
   const { changeTheme } = useTypedSelector((state) => state.player);
-  const { tracks, error: trackError } = useTypedSelector(
-    (state) => state.track
-  );
+  const { tracks, error: trackError } = useTypedSelector((state) => state.track);
   const { playlists, error: playlistError } = useTypedSelector(
     (state) => state.playlist
   );
@@ -48,10 +49,19 @@ const Index: FC<IndexProps> = ({
 
   const currentTheme = changeTheme || initialRememberValue;
 
-  if (trackError || playlistError || playlistTrackError) {
+  if (error || trackError || playlistError || playlistTrackError) {
     return (
       <MainLayout>
-        <h1>{trackError || playlistError || playlistTrackError}</h1>
+        <Box p={3} textAlign="center">
+          <h1>{error || trackError || playlistError || playlistTrackError}</h1>
+          <Button
+            variant="contained"
+            onClick={() => router.push("/tracks")}
+            sx={{ mt: 2 }}
+          >
+            Повернутися до списку треків
+          </Button>
+        </Box>
       </MainLayout>
     );
   }
@@ -196,21 +206,41 @@ export default Index;
 export const getServerSideProps = wrapper.getServerSideProps(
   async ({ store, params, req }) => {
     const dispatch = store?.dispatch as NextThunkDispatch;
-    await dispatch(await fetchTracks(`s=${params?.id}`));
-    await dispatch(await fetchPlaylistTracks(params?.id));
-    await dispatch(await setCurrentPlaylist(params?.id));
-    await dispatch(await fetchPlaylists());
+    const playlistId = params?.id ? String(params.id) : null;
 
-    const cookies = nextCookies({ req });
-    const initialRememberValue = cookies.rememberMe || null;
-    const user = cookies.user;
+    if (!playlistId) {
+      return {
+        notFound: true,
+      };
+    }
 
-    return {
-      props: {
-        serverPlaylist: params?.id,
-        initialRememberValue,
-        user,
-      },
-    };
+    try {
+      await dispatch(await fetchTracks(`s=${playlistId}`));
+      await dispatch(await fetchPlaylistTracks(playlistId));
+      await dispatch(await setCurrentPlaylist(playlistId));
+      await dispatch(await fetchPlaylists());
+
+      const cookies = nextCookies({ req });
+      const initialRememberValue = cookies.rememberMe || null;
+      const user = cookies.user || null;
+
+      return {
+        props: {
+          serverPlaylist: playlistId,
+          initialRememberValue,
+          user,
+        },
+      };
+    } catch (error) {
+      console.error("Error in getServerSideProps:", error);
+      return {
+        props: {
+          serverPlaylist: playlistId,
+          initialRememberValue: null,
+          user: null,
+          error: "Failed to load playlist",
+        },
+      };
+    }
   }
 );
