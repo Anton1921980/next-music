@@ -53,6 +53,7 @@ import { StyledButton } from "./styled/StyledButton";
 import SigninButton from "./SigninButton";
 import Providers from "./Providers";
 import { SelectChangeEvent } from "@mui/material/Select";
+import Image from "next/image";
 
 const drawerWidth = 240;
 
@@ -119,7 +120,7 @@ export default function Navbar({ children }: NavbarProps) {
   const [openTheme, setOpenTheme] = React.useState(false);
   // const [themeChosen, setThemeChosen] = React.useState(null);
 
-  const name = useInput("");
+  const name = useInput("", (value) => value.length >= 0);
   const router = useRouter();
 
   const dispatch = useDispatch() as NextThunkDispatch;
@@ -203,10 +204,12 @@ export default function Navbar({ children }: NavbarProps) {
             component="div"
             sx={{ mr: 2, ...(open && { display: "none" }) }}
           >
-            <img
+            <Image
               src="/logo.png"
               alt="logo"
-              style={{ height: 25, position: "relative", top: 5 }}
+              width={25}
+              height={25}
+              style={{ position: "relative", top: 5 }}
             />
             <span style={{ fontSize: "25px", letterSpacing: "-1.5px" }}>
               YouTrack
@@ -286,10 +289,12 @@ export default function Navbar({ children }: NavbarProps) {
             component="div"
             sx={{ margin: "0 auto" }}
           >
-            <img
+            <Image
               src="/logo.png"
               alt="logo"
-              style={{ height: 25, position: "relative", top: 5 }}
+              width={25}
+              height={25}
+              style={{ position: "relative", top: 5 }}
             />
             <span style={{ fontSize: "25px", letterSpacing: "-1.5px" }}>
               YouTrack

@@ -52,8 +52,8 @@ const TrackPage: FC<TrackPageProps> = ({
   const [open, setOpen] = React.useState(false);
 
   const { playTrack, pauseTrack, setActiveTrack } = useActions();
-  const userName = useInput("");
-  const text = useInput("");
+  const userName = useInput("", (value) => value.length >= 1);;
+  const text = useInput("", (value) => value.length >= 1);;
 
   const handlePlay = (e: any) => {
     play(e, setActiveTrack, pauseTrack, track);
