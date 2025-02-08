@@ -27,9 +27,9 @@ const Create: FC<CreateProps> = ({ initialRememberValue }) => {
     text: false
   });
 
-  const name = useInput("", { required: true, minLength: 1 });
-  const artist = useInput("", { required: true, minLength: 1 });
-  const text = useInput("", { required: true, minLength: 1 });
+  const name = useInput("", (value) => value.length >= 1);
+  const artist = useInput("", (value) => value.length >= 1);
+  const text = useInput("", (value) => value.length >= 1);
 
   const router = useRouter();
 

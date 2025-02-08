@@ -98,7 +98,7 @@ const Index: FC<IndexProps> = ({
                         sx={{ width: "100px", lineHeight: 0.8 }}
                       >
                         {track?.picture && (
-                          <img
+                          <Image
                             width={100}
                             height={100}
                             src={
@@ -106,7 +106,8 @@ const Index: FC<IndexProps> = ({
                               "/" +
                               track.picture
                             }
-                            alt=""
+                            alt="Track cover"
+                            style={{ objectFit: 'cover' }}
                           />
                         )}
                       </Grid>
@@ -178,8 +179,11 @@ const Index: FC<IndexProps> = ({
             </h2> */}
 
             <TrackList
-              tracks={playlistTracks}
-              playlist={serverPlaylist}
+              tracks={playlistTracks.map((track) => ({
+                ...track,
+                listens: Number(track.listens),
+              }))}
+              playlist={Number(serverPlaylist)}
               playlists={playlists}
             />
             <h2
@@ -188,8 +192,11 @@ const Index: FC<IndexProps> = ({
               Recommended tracks:
             </h2>
             <TrackList
-              tracks={tracks}
-              playlist={serverPlaylist}
+              tracks={tracks.map((track) => ({
+                ...track,
+                listens: Number(track.listens),
+              }))}
+              playlist={Number(serverPlaylist)}
               playlists={playlists}
             />
           </Card>
