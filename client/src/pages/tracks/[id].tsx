@@ -117,7 +117,7 @@ const TrackPage: FC<TrackPageProps> = ({
       </Button>
       {/* <div>TRACK PAGE</div> */}
       <Grid container style={{ margin: "20px 0" }}>
-        <img
+        <Image
           src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
           alt=""
           width={300}

@@ -99,8 +99,7 @@ const Index: FC<IndexProps> = ({
                           <Image
                             width={100}
                             height={100}
-                            src={
-                              process.env.NEXT_PUBLIC_SERVER_URL +
+                            src={process.env.NEXT_PUBLIC_SERVER_URL +                           
                               "/" +
                               track.picture
                             }

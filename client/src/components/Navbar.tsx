@@ -147,8 +147,7 @@ export default function Navbar({ children }: NavbarProps) {
     (state) => state.playlist
   );
 
-  const addPlaylist = () => {
-    console.log("name: ", name.value);
+  const addPlaylist = () => {    
     axios
       .post(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/playlist`, {
         name: name.value,

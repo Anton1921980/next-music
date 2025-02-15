@@ -167,11 +167,11 @@ const Player = () => {
         </Grid>
         <Box sx={{ display: "flex" }}>
           {active?.picture && (
-            <img
+            <Image
               style={{ marginTop: "20px" }}
               width={50}
               height={50}
-              src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + active?.picture}
+              src={"/" + active?.picture}
               alt=""
             />
           )}
