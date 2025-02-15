@@ -60,7 +60,7 @@ const TrackPage: FC<TrackPageProps> = ({
   };
 
   const handleAddOrRemoveToPlaylist = async (e: any) => {
-    await addOrRemoveToPlaylist(e, dispatch, track, null, playlists, router);
+    await addOrRemoveToPlaylist(e, dispatch, track, playlistChosen, playlists, router);
   };
 
   const handleInputChange = (e: any) => {

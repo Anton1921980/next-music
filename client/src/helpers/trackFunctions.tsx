@@ -1,4 +1,3 @@
-
 import {
     deleteTrack,
     editTrack,
@@ -21,17 +20,18 @@ export const play = (e:any, setActiveTrack:any, pauseTrack:any, track:ITrack) =>
   };
 
   export const addOrRemoveToPlaylist = async (e:any, dispatch:any, track:ITrack, playlist:any, playlists:any, router:any) => {
+  
     e.stopPropagation();
     await dispatch(
-      await editTrack(
+       editTrack(
         track?._id,
         e.target.value || playlists?.find((item:any) => item.name === "Liked")?._id
       )
     );
     router.pathname !== "/tracks"
-      ? await dispatch(await fetchTracks(`s=${playlist}`))     
-      : await dispatch(await fetchTracks(""));
-    await dispatch(await fetchPlaylistTracks(playlist));
+      ? await dispatch(fetchTracks(e.target.value ? `s=${e.target.value}` : ""))     
+      : await dispatch(fetchTracks(""));
+    await dispatch(fetchPlaylistTracks(e.target.value || ""));
   };
   
   export const handleChange = (e:any, setPlaylistChosen:any, addOrRemoveToPlaylist:any, handleClose:any) => {

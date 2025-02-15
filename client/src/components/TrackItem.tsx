@@ -76,7 +76,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
       e,
       dispatch,
       track,
-      playlist,
+      playlistChosen,
       playlists,
       router
     );
