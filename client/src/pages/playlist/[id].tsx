@@ -102,6 +102,7 @@ const Index: FC<IndexProps> = ({
                             src={`${process.env.NEXT_PUBLIC_SERVER_URL}/${track.picture}`}
                             alt="Track cover"
                             style={{ objectFit: 'cover' }}
+                            unoptimized
                           />
                         )}
                       </Grid>
