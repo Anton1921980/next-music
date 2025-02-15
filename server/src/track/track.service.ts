@@ -34,7 +34,6 @@ export class TrackService {
 
   async getAll(count = 10, offset = 0, playlist: string): Promise<Track[]> {
     let query = {};
-    console.log('playlist: ', playlist, typeof playlist);
     if (playlist == '') {
       query = {};
     } else if (playlist?.includes('s=')) {
@@ -42,9 +41,8 @@ export class TrackService {
     } else {
       query = { playlists: playlist };
     }
-    console.log('query: ', query);
     const tracks = await this.trackModel.find(query).skip(offset).limit(count);
-    console.log('tracks: ', tracks);
+
     return tracks;
   }
 

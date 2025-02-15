@@ -94,7 +94,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
   const handleOpen = (e:any) => {
     e.stopPropagation();
     e.currentTarget.value === "add" ? set$openAdd(true) : set$openRemove(true);
-    console.log(" e.target.value: ", e);
+   
   };
 
   const handleClose = (e:any) => {

@@ -35,8 +35,6 @@ const Index: FC<IndexProps> = ({
   user,
   error,
 }) => {
-  console.log("user: ", user);
-  console.log("serverPlaylist: ", serverPlaylist);
 
   const router = useRouter();
   const { changeTheme } = useTypedSelector((state) => state.player);

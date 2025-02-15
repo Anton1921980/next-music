@@ -56,7 +56,6 @@ const Player = () => {
       audio?.pause();
     }
   };
-  console.log("pause: ", pause);
   const tracklist = playlistTracks?.find((track: ITrack) => track._id === active?._id)
     ? playlistTracks
     : tracks;
@@ -103,11 +102,9 @@ const Player = () => {
       // tracklist
       (track: ITrack) => track._id === active?._id
     );
-    console.log("updatedTrack: ", updatedTrack);
     updatedTrack && setActiveTrack(updatedTrack);
   }, [tracks, playlistTracks]);
-
-  console.log("currentPlaylist: ", currentPlaylist);
+ 
 
   useEffect(() => {
     if (!audio) {

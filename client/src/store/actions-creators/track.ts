@@ -7,7 +7,7 @@ export const fetchTracks = (playlist: string) => {
         try {
             const response = await axios.get( process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/?playlist=" + playlist );
             dispatch({ type: TrackActionTypes.FETCH_TRACKS, payload: response.data });
-            console.log("response TRACKS: ", response.data);
+       
         } catch (e) {
             dispatch({
                 type: TrackActionTypes.FETCH_TRACKS_ERROR,
@@ -40,7 +40,7 @@ export const editTrack = (id: string|undefined, playlist: string) => {
     ) => {
         try {            
             const response = await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/${id}/?playlist=${playlist}`);
-            console.log("response: ", response.data);
+           
             dispatch({ type: TrackActionTypes.EDIT_TRACK, payload: response.data });
         } catch (e) {
             dispatch({
@@ -54,14 +54,14 @@ export const editTrack = (id: string|undefined, playlist: string) => {
 
 
 export const deleteTrack = (id: number|string) => {
-    console.log("id: ", id);
+   
     return async (
         dispatch: Dispatch<TrackAction>
     ) => {
         try {
-            console.log("id2: ", id);
+          
             const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/${id}`);
-            console.log("response: ", response.data);
+           
             dispatch({ type: TrackActionTypes.DELETE_TRACK, payload: response.data });
         } catch (e) {
             dispatch({

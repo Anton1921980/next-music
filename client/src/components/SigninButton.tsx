@@ -8,8 +8,7 @@ import Image from "next/image";
 import Cookie from "js-cookie";
 
 const SigninButton = () => {
-  const { data: session } = useSession();
-  console.log("session: ", session);
+  const { data: session } = useSession();  
   session?.user?.email && Cookie.set("user", session?.user?.email);
   
   if (session && session.user) {

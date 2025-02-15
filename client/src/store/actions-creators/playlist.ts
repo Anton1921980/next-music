@@ -24,7 +24,7 @@ export const fetchPlaylists = () => {
         try {
             const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/tracks/playlists");
             dispatch({ type: PlaylistActionTypes.FETCH_PLAYLISTS, payload: response.data });
-            console.log("response PLAYLISTS: ", response.data);
+            
         } catch (e) {
             dispatch({
                 type: PlaylistActionTypes.FETCH_PLAYLISTS_ERROR,
@@ -36,14 +36,14 @@ export const fetchPlaylists = () => {
 };
 
 export const deletePlaylist = (id: number) => {
-    console.log("id: ", id);
+   
     return async (
         dispatch: Dispatch<PlaylistAction>
     ) => {
         try {
-            console.log("id2: ", id);
+       
             const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER_URL}/tracks/playlists/${id}`);
-            console.log("response: ", response.data);
+           
             dispatch({ type: PlaylistActionTypes.DELETE_PLAYLIST, payload: response.data });
         } catch (e) {
             dispatch({

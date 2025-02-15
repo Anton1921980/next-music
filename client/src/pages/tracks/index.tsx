@@ -50,7 +50,7 @@ const Index: FC<IndexProps> = ({ initialRememberValue }) => {
     };
 
     fetchData();
-  }, [retryCount]);
+  }, [retryCount, dispatch]);
 
   if (isLoading) {
     return (
@@ -66,8 +66,9 @@ const Index: FC<IndexProps> = ({ initialRememberValue }) => {
             <div className="spinner"></div>
           </Box>
           <Box sx={{ textAlign: "center", maxWidth: "400px" }}>
-            Server is on Vercel FREE plan, so first load is up to 1 min please
-            wait. It is not an app issue.
+            Server is on Vercel FREE plan, 
+            so first load is up to 1 min, please wait.
+            It is not an app issue.
           </Box>
         </Box>
       </MainLayout>

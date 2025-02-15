@@ -11,14 +11,12 @@ const Div = styled.div`
 `;
 
 const MUIThemeProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { resolvedTheme } = useTheme();
-  console.log("resolvedTheme: ", resolvedTheme);
+  const { resolvedTheme } = useTheme(); 
 
   const [currentTheme, setCurrentTheme] = useState<Theme>(darkTheme);
 
   const { changeTheme } = useTypedSelector((state) => state.player);
-  console.log("changeTheme: ", changeTheme);
-
+ 
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

@@ -7,7 +7,6 @@ import React, { ReactNode } from "react";
 // }
 
 const Providers = (props) => {
-  console.log("props Providers: ", props);
  
   return <SessionProvider>{props.children}</SessionProvider>;
 };
