@@ -122,8 +122,9 @@ const TrackItem: React.FC<TrackItemProps> = ({
           <Image
             width={40}
             height={40}
-            src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
-            alt=""
+            src={`${process.env.NEXT_PUBLIC_SERVER_URL}/${track.picture}`}
+            alt={track.name || "Track image"}
+            unoptimized
           />
         )}
         <Grid

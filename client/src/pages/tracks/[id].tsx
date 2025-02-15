@@ -118,10 +118,11 @@ const TrackPage: FC<TrackPageProps> = ({
       {/* <div>TRACK PAGE</div> */}
       <Grid container style={{ margin: "20px 0" }}>
         <Image
-          src={process.env.NEXT_PUBLIC_SERVER_URL + "/" + track.picture}
-          alt=""
+          src={`${process.env.NEXT_PUBLIC_SERVER_URL}/${track.picture}`}
+          alt={track.name || "Track image"}
           width={300}
           height={300}
+          unoptimized
         />
         <Grid item sx={{ marginLeft: "40px" }}>
           <h1 style={{ fontSize: "40px" }}> {track.name}</h1>

@@ -171,8 +171,9 @@ const Player = () => {
               style={{ marginTop: "20px" }}
               width={50}
               height={50}
-              src={"/" + active?.picture}
-              alt=""
+              src={`${process.env.NEXT_PUBLIC_SERVER_URL}/${active?.picture}`}
+              alt={active?.name || "Now playing"}
+              unoptimized
             />
           )}
           <Grid
